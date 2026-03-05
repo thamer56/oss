@@ -1,0 +1,578 @@
+<!-- Super Admin Dashboard -->
+<div class="bg-gray-50 min-h-screen font-sans flex flex-col md:flex-row">
+
+    <!-- Desktop Sidebar -->
+    <aside
+        class="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0 z-50 flex-shrink-0">
+        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <span class="text-white font-bold text-lg">OSS</span>
+            </div>
+            <div>
+                <h2 class="font-bold text-slate-800 leading-tight">{{ user?.nom || 'Portail' }}</h2>
+                <p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">{{ user?.role ||
+                    'Super Admin' }}</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
+            <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mt-2 mb-2">{{ translate.t.menu }}
+            </p>
+            <a routerLink="/super-admin" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform"
+                    style="font-variation-settings:'FILL' 1">home</span>
+                <span class="text-sm">{{ translate.t.dashboard }}</span>
+            </a>
+            <a routerLink="/equipe" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">group</span>
+                <span class="text-sm">{{ translate.t.team }}</span>
+            </a>
+            <a routerLink="/budget" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span
+                    class="material-symbols-outlined group-hover:scale-110 transition-transform">account_balance_wallet</span>
+                <span class="text-sm">Budget</span>
+            </a>
+            <a routerLink="/project/new" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">add_circle</span>
+                <span class="text-sm">Créer un Projet</span>
+            </a>
+            <a routerLink="/admin/signup" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">person_add</span>
+                <span class="text-sm">{{ translate.t.manageStaff }}</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-100">
+            <button (click)="logout()"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+                <span class="material-symbols-outlined text-lg">logout</span> {{ translate?.t?.logout || 'Déconnexion'
+                }}
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 pb-24 md:pb-0">
+
+        <!-- Top Header -->
+        <header
+            class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 text-blue-600">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">grid_view</span>
+                </div>
+                <h1 class="text-lg md:text-2xl font-bold tracking-tight text-slate-800">{{ translate.t.overview }}</h1>
+                <span
+                    class="ml-2 px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase border border-red-200">Admin
+                    Mode</span>
+            </div>
+            <div class="flex items-center gap-2 md:gap-4">
+                <!-- Notification Bell with Panel -->
+                <div class="relative">
+                    <button (click)="showNotifPanel = !showNotifPanel"
+                        class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span *ngIf="unreadCount > 0"
+                            class="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-white text-[9px] font-bold flex items-center justify-center">
+                            {{ unreadCount > 9 ? '9+' : unreadCount }}
+                        </span>
+                    </button>
+                    <!-- Notification Dropdown Panel -->
+                    <div *ngIf="showNotifPanel"
+                        class="absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-800">Notifications</h3>
+                            <button (click)="markAllRead(); showNotifPanel = false"
+                                class="text-xs text-blue-600 font-semibold hover:underline">Tout marquer lu</button>
+                        </div>
+                        <div class="max-h-80 overflow-y-auto">
+                            <div *ngFor="let n of notifications" (click)="notifService.markRead(n.id)"
+                                class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer border-b border-slate-50"
+                                [class.bg-blue-50]="!n.read">
+                                <span class="material-symbols-outlined text-xl mt-0.5"
+                                    [ngClass]="n.type === 'warning' ? 'text-amber-500' : n.type === 'success' ? 'text-emerald-500' : 'text-blue-500'">
+                                    {{ n.icon }}
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-slate-700 leading-snug" [class.font-semibold]="!n.read">{{
+                                        n.message }}</p>
+                                    <p class="text-xs text-slate-400 mt-1">{{ n.createdAt | date:'dd/MM HH:mm' }}</p>
+                                </div>
+                                <div *ngIf="!n.read" class="w-2 h-2 bg-blue-500 rounded-full mt-1.5 flex-shrink-0">
+                                </div>
+                            </div>
+                            <div *ngIf="notifications.length === 0" class="px-4 py-8 text-center text-slate-400">
+                                <span class="material-symbols-outlined text-3xl block mb-2">notifications_none</span>
+                                <p class="text-sm">Aucune notification</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:flex flex-col items-end">
+                    <span class="text-sm font-bold text-slate-800">{{ user?.nom || 'Admin' }}</span>
+                    <span class="text-xs text-slate-500">{{ user?.role }} — Secrétariat Exécutif</span>
+                </div>
+                <div
+                    class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">person</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="border-b border-slate-200 bg-white px-4 md:px-8">
+            <nav class="flex gap-1">
+                <button (click)="activeTab='projets'"
+                    class="flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors"
+                    [class]="activeTab==='projets' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                    <span
+                        class="material-symbols-outlined group-hover:scale-110 transition-transform">folder_open</span>
+                    Projets
+                </button>
+                <button (click)="activeTab='stats'"
+                    class="flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors"
+                    [class]="activeTab==='stats' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">bar_chart</span>
+                    Statistiques
+                </button>
+            </nav>
+        </div>
+
+        <!-- Stats Dashboard Tab -->
+        <div *ngIf="activeTab==='stats'">
+            <app-stats-dashboard [divisionId]="null" [userRole]="user?.role || ''"></app-stats-dashboard>
+        </div>
+
+        <main *ngIf="activeTab==='projets'" class="p-4 md:p-8 space-y-6 md:space-y-8">
+
+
+
+            <section class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <div class="col-span-2 md:col-span-4 flex items-center justify-between mb-2 text-slate-800">
+                    <h2 class="text-sm md:text-base font-bold uppercase tracking-wider text-slate-500">{{
+                        translate.t.executiveKPIs }}
+                    </h2>
+                    <span
+                        class="text-xs md:text-sm text-blue-600 font-bold flex items-center gap-1 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 shadow-sm">
+                        <span
+                            class="material-symbols-outlined group-hover:scale-110 transition-transform">calendar_today</span>
+                        {{ translate.t.thisQuarter }}
+                    </span>
+                </div>
+
+                <!-- Card 1: Total Projects -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div
+                        class="absolute -right-6 -top-6 text-slate-50 group-hover:scale-110 transition-transform duration-500 z-0">
+                        <span class="material-symbols-outlined text-9xl">folder_open</span>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">{{
+                                translate.t.totalProjects }}</span>
+                            <span
+                                class="material-symbols-outlined text-blue-600 bg-blue-50 p-2 rounded-xl">folder_open</span>
+                        </div>
+                        <p class="text-3xl font-bold text-slate-800">{{ stats.totalProjects }}</p>
+                    </div>
+                </div>
+
+                <!-- Card 2: Global Budget -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div
+                        class="absolute -right-6 -top-6 text-slate-50 group-hover:scale-110 transition-transform duration-500 z-0">
+                        <span class="material-symbols-outlined text-9xl">payments</span>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">{{
+                                translate.t.globalBudget }}</span>
+                            <span
+                                class="material-symbols-outlined text-amber-500 bg-amber-50 p-2 rounded-xl">payments</span>
+                        </div>
+                        <p class="text-3xl font-bold text-slate-800">${{ stats.totalBudget / 1000000 | number:'1.1-1'
+                            }}M
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 3: Active Divisions (Wide) -->
+                <div
+                    class="col-span-2 bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-800 flex items-center justify-between relative overflow-hidden group">
+                    <div
+                        class="absolute right-0 top-0 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                        <span
+                            class="material-symbols-outlined text-8xl md:text-9xl transform translate-x-4 -translate-y-4">public</span>
+                    </div>
+                    <div class="relative z-10 w-full">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-slate-400 text-xs md:text-sm font-medium">{{ translate.t.activeDivisions
+                                    }}
+                                </p>
+                                <p class="text-2xl md:text-3xl font-bold leading-none text-white mt-1">04</p>
+                            </div>
+                            <span
+                                class="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] md:text-xs font-bold px-2 py-1 rounded-md uppercase tracking-wider">
+                                {{ translate.t.totalCoverage }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <div class="flex -space-x-3 md:-space-x-2">
+                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-slate-900 bg-blue-500 shadow-md flex items-center justify-center text-[10px] md:text-xs text-white font-bold"
+                                    title="Biodiversité">BIO</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-slate-900 bg-emerald-500 shadow-md flex items-center justify-center text-[10px] md:text-xs text-white font-bold"
+                                    title="Climat">CLI</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-slate-900 bg-cyan-500 shadow-md flex items-center justify-center text-[10px] md:text-xs text-white font-bold"
+                                    title="Eau">EAU</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-slate-900 bg-amber-500 shadow-md flex items-center justify-center text-[10px] md:text-xs text-white font-bold"
+                                    title="Terre">TER</div>
+                            </div>
+                            <p class="text-xs text-slate-400 font-medium ml-2">{{ translate.t.operationalPrograms }}</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Division Overview (Horizontal scroll on mobile, Grid on desktop) -->
+            <section class="space-y-4">
+                <div class="flex items-center justify-between px-1">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-800">{{ translate.t.divisionsOverview }}</h2>
+                </div>
+
+                <div class="flex overflow-x-auto md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 pb-4 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0"
+                    style="-ms-overflow-style:none;scrollbar-width:none;">
+                    <!-- Biodiversité -->
+                    <div (click)="filterProjects('D04')"
+                        class="flex-none w-72 md:w-auto bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all cursor-pointer"
+                        [class.ring-2]="selectedDivisionFilter === 'D04'"
+                        [class.ring-blue-500]="selectedDivisionFilter === 'D04'">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div
+                                class="w-12 h-12 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-2xl">
+                                🌱</div>
+                            <div>
+                                <h3 class="font-bold text-slate-800">D04 (Bio)</h3>
+                                <p class="text-[10px] md:text-xs font-semibold text-slate-500 uppercase">Priorité
+                                    Globale</p>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 flex justify-end items-center text-slate-600">
+                            <span
+                                class="text-[10px] md:text-xs font-medium uppercase text-blue-500 hover:text-blue-700 cursor-pointer">
+                                {{ selectedDivisionFilter === 'D04' ? 'Annuler le filtre' : 'Voir les projets'
+                                }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Climat -->
+                    <div (click)="filterProjects('D01')"
+                        class="flex-none w-72 md:w-auto bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer"
+                        [class.ring-2]="selectedDivisionFilter === 'D01'"
+                        [class.ring-emerald-500]="selectedDivisionFilter === 'D01'">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div
+                                class="w-12 h-12 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-2xl">
+                                🌍</div>
+                            <div>
+                                <h3 class="font-bold text-slate-800">D01 (Climat)</h3>
+                                <p class="text-[10px] md:text-xs font-semibold text-slate-500 uppercase">Impact
+                                    Résilience</p>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 flex justify-end items-center text-slate-600">
+                            <span
+                                class="text-[10px] md:text-xs font-medium uppercase text-emerald-500 hover:text-emerald-700 cursor-pointer">
+                                {{ selectedDivisionFilter === 'D01' ? 'Annuler le filtre' : 'Voir les projets' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Eau -->
+                    <div (click)="filterProjects('D02')"
+                        class="flex-none w-72 md:w-auto bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-cyan-200 transition-all cursor-pointer"
+                        [class.ring-2]="selectedDivisionFilter === 'D02'"
+                        [class.ring-cyan-500]="selectedDivisionFilter === 'D02'">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div
+                                class="w-12 h-12 rounded-lg bg-cyan-50 border border-cyan-100 flex items-center justify-center text-2xl">
+                                💧</div>
+                            <div>
+                                <h3 class="font-bold text-slate-800">D02 (Eau)</h3>
+                                <p class="text-[10px] md:text-xs font-semibold text-slate-500 uppercase">Gestion
+                                    Aquifère</p>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 flex justify-end items-center text-slate-600">
+                            <span
+                                class="text-[10px] md:text-xs font-medium uppercase text-cyan-500 hover:text-cyan-700 cursor-pointer">
+                                {{ selectedDivisionFilter === 'D02' ? 'Annuler le filtre' : 'Voir les projets' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Terre -->
+                    <div (click)="filterProjects('D03')"
+                        class="flex-none w-72 md:w-auto bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-amber-200 transition-all cursor-pointer"
+                        [class.ring-2]="selectedDivisionFilter === 'D03'"
+                        [class.ring-amber-500]="selectedDivisionFilter === 'D03'">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div
+                                class="w-12 h-12 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-2xl">
+                                🌾</div>
+                            <div>
+                                <h3 class="font-bold text-slate-800">D03 (Terre)</h3>
+                                <p class="text-[10px] md:text-xs font-semibold text-slate-500 uppercase">Restauration
+                                    Sols</p>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 flex justify-end items-center text-slate-600">
+                            <span
+                                class="text-[10px] md:text-xs font-medium uppercase text-amber-500 hover:text-amber-700 cursor-pointer">
+                                {{ selectedDivisionFilter === 'D03' ? 'Annuler le filtre' : 'Voir les projets' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Management Section -->
+            <section id="projects-pipeline" class="space-y-4">
+                <div class="flex items-center justify-between px-1">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-800">Pipeline des Projets ({{ projects.length }})
+                    </h2>
+                    <button (click)="openAddProject()"
+                        class="md:hidden p-2 bg-blue-600 text-white rounded-lg shadow-md">
+                        <span class="material-symbols-outlined group-hover:scale-110 transition-transform">add</span>
+                    </button>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-wrap items-end gap-3">
+                    <!-- Année -->
+                    <div class="flex flex-col gap-1 min-w-[130px]">
+                        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Année</label>
+                        <select [(ngModel)]="filterYear" (ngModelChange)="applyFilters()"
+                            class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="">Toutes</option>
+                            <option *ngFor="let y of availableYears" [value]="y">{{ y }}</option>
+                        </select>
+                    </div>
+                    <!-- Division -->
+                    <div class="flex flex-col gap-1 min-w-[130px]">
+                        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Division</label>
+                        <select [(ngModel)]="filterDivision" (ngModelChange)="applyFilters()"
+                            class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="">Toutes</option>
+                            <option value="D01">D01 — Climat</option>
+                            <option value="D02">D02 — Eau</option>
+                            <option value="D03">D03 — Terre</option>
+                            <option value="D04">D04 — Biodiversité</option>
+                        </select>
+                    </div>
+                    <!-- Pays -->
+                    <div class="flex flex-col gap-1 flex-1 min-w-[200px]">
+                        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Pays
+                            bénéficiaire</label>
+                        <select [(ngModel)]="filterPays" (ngModelChange)="applyFilters()"
+                            class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="">Tous les pays</option>
+                            <option *ngFor="let pays of availablePays" [value]="pays">{{ pays }}</option>
+                        </select>
+                    </div>
+                    <!-- Reset -->
+                    <button (click)="resetFilters()"
+                        class="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-all"
+                        [class.opacity-40]="!filterYear && !filterDivision && !filterPays">
+                        <span
+                            class="material-symbols-outlined group-hover:scale-110 transition-transform">filter_alt_off</span>
+                        Réinitialiser
+                    </button>
+                    <!-- Active filter count badge -->
+                    <span *ngIf="filterYear || filterDivision || filterPays"
+                        class="ml-auto px-2.5 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">
+                        {{ activeFilterCount }} filtre(s) actif(s)
+                    </span>
+                </div>
+
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 class="text-lg font-bold text-slate-800">Liste des Projets</h3>
+                        <span
+                            class="bg-white px-3 py-1 rounded-full text-xs font-bold text-slate-500 border border-slate-200 shadow-sm">{{
+                            projects.length }} Projet(s)</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr
+                                    class="bg-white border-b border-slate-100 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                    <th class="p-4 pl-6">Projet / Acronyme</th>
+                                    <th class="p-4">Axe</th>
+                                    <th class="p-4">Statut</th>
+                                    <th class="p-4">Budget Global</th>
+                                    <th class="p-4 pr-6 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100/80 bg-white">
+                                <tr *ngFor="let p of projects" class="hover:bg-slate-50/80 transition-colors group">
+                                    <td class="p-4 pl-6">
+                                        <a [routerLink]="['/project', p.id_projet]"
+                                            class="flex flex-col hover:bg-slate-50 p-1 -ml-1 rounded transition-colors w-fit">
+                                            <span
+                                                class="text-sm font-bold text-slate-800 hover:text-blue-600 transition-colors">{{
+                                                p.nom_projet }}</span>
+                                            <span class="text-xs text-slate-400 font-medium">{{ p.acronyme }}</span>
+                                        </a>
+                                    </td>
+                                    <td class="p-4">
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded bg-slate-100 text-slate-600 font-bold text-[10px] tracking-wider uppercase border border-slate-200">
+                                            {{ p.axe || 'Axe 1' }}
+                                        </span>
+                                    </td>
+                                    <td class="p-4">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase border shadow-sm"
+                                            [ngClass]="{
+                                                'bg-blue-50 text-blue-700 border-blue-200': p.etat === 'En Cours',
+                                                'bg-emerald-50 text-emerald-700 border-emerald-200': p.etat === 'Clôturé',
+                                                'bg-amber-50 text-amber-700 border-amber-200': p.etat === 'En Retard',
+                                                'bg-red-50 text-red-700 border-red-200': p.etat === 'A Risque'
+                                            }">
+                                            <span class="w-1.5 h-1.5 rounded-full" [ngClass]="{
+                                                'bg-blue-600': p.etat === 'En Cours',
+                                                'bg-emerald-600': p.etat === 'Clôturé',
+                                                'bg-amber-500': p.etat === 'En Retard',
+                                                'bg-red-600': p.etat === 'A Risque'
+                                            }"></span>
+                                            {{ p.etat }}
+                                        </span>
+                                    </td>
+                                    <td class="p-4">
+                                        <div class="flex items-baseline gap-1">
+                                            <span class="text-slate-400 font-medium text-xs">$</span>
+                                            <span class="text-sm font-bold text-slate-700">{{ p.budget_total | number
+                                                }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="p-4 pr-6">
+                                        <div
+                                            class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <a [routerLink]="['/project', p.id_projet]"
+                                                class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                                                [title]="translate.t.viewDetails">
+                                                <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                            </a>
+                                            <button (click)="editProject(p)"
+                                                class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors border border-transparent hover:border-amber-100"
+                                                [title]="translate.t.edit">
+                                                <span class="material-symbols-outlined text-[18px]">edit</span>
+                                            </button>
+                                            <button (click)="deleteProject(p.id_projet)"
+                                                class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                                                [title]="translate.t.delete">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Activities -->
+            <section class="space-y-4">
+                <h2 class="text-lg md:text-xl font-bold px-1 text-slate-800">Activités Récentes</h2>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div *ngFor="let act of activities; let last = last"
+                        class="flex flex-col md:flex-row md:items-center gap-4 p-4 md:p-5 border-slate-100 hover:bg-slate-50 transition-colors cursor-default"
+                        [ngClass]="{'border-b': !last}">
+                        <div class="w-10 h-10 md:w-12 md:h-12 flex-none rounded-full border flex items-center justify-center"
+                            [ngClass]="{
+                                'bg-blue-50 text-blue-600 border-blue-100': act.color === 'blue',
+                                'bg-emerald-50 text-emerald-600 border-emerald-100': act.color === 'emerald',
+                                'bg-amber-50 text-amber-600 border-amber-100': act.color === 'amber'
+                            }">
+                            <span class="material-symbols-outlined group-hover:scale-110 transition-transform">{{
+                                act.icon
+                                }}</span>
+                        </div>
+                        <div class="flex-1 space-y-1">
+                            <div class="flex justify-between items-start">
+                                <p class="text-sm md:text-base font-bold text-slate-800">{{ act.title }}</p>
+                                <span
+                                    class="text-[10px] md:text-xs font-medium text-slate-400 bg-slate-100 px-2 py-1 rounded-md">{{
+                                    act.time }}</span>
+                            </div>
+                            <p class="text-xs md:text-sm text-slate-600" [innerHTML]="act.description"></p>
+                        </div>
+                        <div class="hidden md:block">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-bold border" [ngClass]="{
+                                    'bg-blue-100/50 text-blue-700 border-blue-200': act.type === 'RAPPORT',
+                                    'bg-emerald-100/50 text-emerald-700 border-emerald-200': act.type === 'APPROBATION',
+                                    'bg-amber-100/50 text-amber-700 border-amber-200': act.type === 'ADMIN'
+                                }">{{ act.type }}</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bottom Nav (Mobile Only) -->
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-1 pb-safe pt-1 z-50 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.15)]">
+        <div class="flex justify-around items-center py-1">
+            <a routerLink="/super-admin" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1">home</span>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Accueil</span>
+            </a>
+            <a routerLink="/equipe" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">group</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Équipe</span>
+            </a>
+            <a routerLink="/budget" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Budget</span>
+            </a>
+            <a routerLink="/admin/signup" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">person_add</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Admin</span>
+            </a>
+            <button (click)="logout()"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-red-500 hover:text-red-700 transition-colors">
+                <span class="material-symbols-outlined text-xl">logout</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider text-center px-1">Quitter</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Project Form Modal -->
+    <app-project-form *ngIf="showProjectForm" [isEdit]="isEdit" [model]="selectedProject" (save)="saveProject($event)"
+        (close)="showProjectForm = false">
+    </app-project-form>
+
+</div>

@@ -1,0 +1,235 @@
+<div class="min-h-screen flex bg-slate-50 font-sans">
+
+    <!-- ===== DESKTOP SIDEBAR ===== -->
+    <aside class="hidden md:flex w-64 flex-col bg-white border-r border-slate-200 shadow-sm min-h-screen">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-100">
+            <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow">
+                <span class="material-symbols-outlined text-white text-lg">shield</span>
+            </div>
+            <div>
+                <p class="text-sm font-extrabold text-slate-800 leading-tight">OSS Portal</p>
+                <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Admin</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+            <a routerLink="/super-admin" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">home</span>
+                <span class="text-sm">Tableau de bord</span>
+            </a>
+            <a routerLink="/equipe" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">group</span>
+                <span class="text-sm">Gérer Personnel</span>
+            </a>
+            <a routerLink="/budget" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform"
+                    style="font-variation-settings:'FILL' 1">account_balance_wallet</span>
+                <span class="text-sm">Budget</span>
+            </a>
+            <a routerLink="/project/new" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">add_circle</span>
+                <span class="text-sm">Créer un Projet</span>
+            </a>
+            <!-- Active page highlight -->
+            <a routerLink="/admin/signup" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 font-bold rounded-xl transition-all group">
+                <span class="material-symbols-outlined">person_add</span>
+                <span class="text-sm">Ajouter Personnel</span>
+            </a>
+        </nav>
+
+        <!-- Sidebar Footer -->
+        <div class="px-3 pb-4 border-t border-slate-100 pt-3 space-y-1">
+            <button (click)="logout()"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+                <span class="material-symbols-outlined text-lg">logout</span>
+                Déconnexion
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="flex-1 flex flex-col min-w-0 pb-24 md:pb-0">
+
+        <!-- Header -->
+        <header
+            class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button (click)="cancel()" class="p-1.5 hover:bg-slate-100 rounded-lg transition-colors text-slate-600">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <h1 class="text-lg font-bold text-slate-900">Ajouter un Utilisateur</h1>
+                <span
+                    class="hidden sm:inline ml-1 px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase border border-red-200">Admin
+                    Only</span>
+            </div>
+            <!-- Mobile logout -->
+            <button (click)="logout()"
+                class="md:hidden flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 font-bold text-sm rounded-xl border border-red-200 hover:bg-red-100 transition-colors">
+                <span class="material-symbols-outlined text-base">logout</span>
+                Déconnexion
+            </button>
+        </header>
+
+        <!-- Form Content -->
+        <div class="flex-1 flex flex-col items-center justify-start p-4 md:p-8 overflow-y-auto">
+            <div class="w-full max-w-md">
+
+                <!-- Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-slate-900">Détails du Personnel</h2>
+                        <p class="text-sm text-slate-500 mt-1">Saisissez les informations pour le nouveau membre.</p>
+                    </div>
+
+                    <form class="space-y-4" #signupForm="ngForm">
+                        <!-- Full Name -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700 uppercase tracking-tight ml-1">Nom
+                                Complet</label>
+                            <div class="relative">
+                                <span
+                                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+                                <input name="nom" [(ngModel)]="model.nom" required
+                                    class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-all text-slate-900 placeholder:text-slate-400 text-sm"
+                                    placeholder="ex: Dr. Amadi Chen" type="text" />
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700 uppercase tracking-tight ml-1">Email
+                                Professionnel</label>
+                            <div class="relative">
+                                <span
+                                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
+                                <input name="username" [(ngModel)]="model.username" required
+                                    class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-all text-slate-900 placeholder:text-slate-400 text-sm"
+                                    placeholder="staff.name@oss-online.org" type="email" autocorrect="off"
+                                    autocapitalize="none" />
+                            </div>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="space-y-1.5">
+                            <label
+                                class="text-xs font-semibold text-slate-700 uppercase tracking-tight ml-1">Rôle</label>
+                            <div class="relative">
+                                <span
+                                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">badge</span>
+                                <select name="role" [(ngModel)]="model.role" required (change)="onRoleChange()"
+                                    class="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-all text-slate-900 appearance-none text-sm">
+                                    <option value="">Sélectionnez un rôle</option>
+                                    <option value="directeur">Directeur</option>
+                                    <option value="chef_division">Chef de Division</option>
+                                    <option value="chef_projet">Chef de Projet</option>
+                                </select>
+                                <span
+                                    class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">unfold_more</span>
+                            </div>
+                        </div>
+
+                        <!-- Division (if needed) -->
+                        <div class="space-y-1.5" *ngIf="requiresDivision()">
+                            <label
+                                class="text-xs font-semibold text-slate-700 uppercase tracking-tight ml-1">Division</label>
+                            <div class="relative">
+                                <span
+                                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">grid_view</span>
+                                <select name="division_id" [(ngModel)]="model.division_id" required
+                                    class="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-all text-slate-900 appearance-none text-sm">
+                                    <option value="">Sélectionnez une division</option>
+                                    <option value="D01">D01 — Climat</option>
+                                    <option value="D02">D02 — Eau</option>
+                                    <option value="D03">D03 — Terre</option>
+                                    <option value="D04">D04 — Biodiversité</option>
+                                </select>
+                                <span
+                                    class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">unfold_more</span>
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700 uppercase tracking-tight ml-1">Mot de
+                                Passe</label>
+                            <div class="relative">
+                                <span
+                                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
+                                <input name="password" [(ngModel)]="model.password"
+                                    class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-all text-slate-900 placeholder:text-slate-400 text-sm"
+                                    placeholder="Entrez un mot de passe" type="text" />
+                            </div>
+                            <button type="button" (click)="model.password = '50611477'"
+                                class="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 font-semibold mt-1 px-1 transition-colors">
+                                <span class="material-symbols-outlined text-sm">key</span>
+                                Utiliser le mot de passe par défaut (50611477)
+                            </button>
+                        </div>
+
+                        <!-- Submit -->
+                        <button (click)="createAccount()" [disabled]="!signupForm.valid"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-600/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 mt-2"
+                            type="button">
+                            <span class="material-symbols-outlined">person_add</span>
+                            Créer le Compte
+                        </button>
+                        <button (click)="cancel()"
+                            class="w-full text-slate-400 font-semibold py-2 text-sm hover:text-slate-600 transition-colors"
+                            type="button">
+                            Annuler
+                        </button>
+                    </form>
+                </div>
+
+                <p class="text-xs text-slate-400 text-center mt-4 leading-relaxed max-w-sm mx-auto">
+                    En tant que Secrétaire Exécutif, vous avez l'autorité pour gérer les accès. Toutes les créations
+                    sont journalisées.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MOBILE BOTTOM NAV ===== -->
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-1 pb-safe pt-1 z-50 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.15)]">
+        <div class="flex justify-around items-center py-1">
+            <a routerLink="/super-admin" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1">home</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Accueil</span>
+            </a>
+            <a routerLink="/equipe" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">group</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Équipe</span>
+            </a>
+            <a routerLink="/budget" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Budget</span>
+            </a>
+            <a routerLink="/admin/signup" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">person_add</span>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Admin</span>
+            </a>
+            <button (click)="logout()"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-red-500 hover:text-red-700 transition-colors">
+                <span class="material-symbols-outlined text-xl">logout</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider text-center px-1">Quitter</span>
+            </button>
+        </div>
+    </nav>
+</div>

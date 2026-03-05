@@ -1,0 +1,106 @@
+<!-- pm-tasks Dashboard -->
+<div class="bg-gray-50 min-h-screen font-sans flex flex-col md:flex-row">
+
+    <!-- Desktop Sidebar -->
+    <aside
+        class="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0 z-50 flex-shrink-0">
+        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <span class="text-white font-bold text-lg">OSS</span>
+            </div>
+            <div>
+                <h2 class="font-bold text-slate-800 leading-tight">Portail</h2>
+                <p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Chef Projet</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
+            <a routerLink="/project-manager"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform"
+                    style="font-variation-settings:'FILL' 1">dashboard</span>
+                <span class="text-sm">Tableau de bord</span>
+            </a>
+
+            <a routerLink="/equipe"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">group</span>
+                <span class="text-sm">Équipe</span>
+            </a>
+
+            <a routerLink="/budget"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">payments</span>
+                <span class="text-sm">Budget</span>
+            </a>
+
+            <a routerLink="/pm-tasks" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">assignment</span>
+                <span class="text-sm">Tâches</span>
+            </a>
+
+            <a routerLink="/pm-calendar"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">calendar_today</span>
+                <span class="text-sm">Agenda</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 pb-24 md:pb-0">
+
+        <!-- Header -->
+        <header
+            class="flex items-center justify-between px-4 md:px-8 py-4 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40">
+            <div class="flex items-center gap-3">
+                <div class="p-2 md:p-3 bg-blue-50 rounded-lg"><span
+                        class="material-symbols-outlined text-blue-600 text-xl md:text-2xl font-bold">
+                        assignment
+                    </span></div>
+                <div>
+                    <h1 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight leading-tight">Gestion des
+                        Tâches</h1>
+                    <p class="text-[10px] md:text-xs text-slate-500 font-semibold tracking-wide uppercase mt-0.5">Suivi
+                        des activités</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 md:p-8">
+            <div class="text-center py-20 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <span class="material-icons text-6xl text-slate-300 mb-4 block">construction</span>
+                <h3 class="text-xl font-medium text-slate-800">Module en construction</h3>
+                <p class="text-slate-500 mt-2">Ce module sera bientôt disponible.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bottom Nav (Mobile Only) -->
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 pb-6 pt-2 z-50 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+        <div class="flex justify-around items-center h-full">
+            <a routerLink="/pm-tasks" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-1 transition-colors">
+                <span
+                    class="material-symbols-outlined group-hover:scale-110 transition-transform text-blue-600">assignment</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">Tâches</span>
+            </a>
+
+            <a routerLink="/project-manager"
+                class="flex flex-1 flex-col items-center gap-1 text-slate-400 hover:text-slate-600 transition-colors">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform"
+                    style="font-variation-settings:'FILL' 1">dashboard</span>
+                <span class="text-[10px] font-semibold uppercase tracking-wider">Dashboard</span>
+            </a>
+
+            <a routerLink="/pm-calendar"
+                class="flex flex-1 flex-col items-center gap-1 text-slate-400 hover:text-slate-600 transition-colors">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">calendar_today</span>
+                <span class="text-[10px] font-semibold uppercase tracking-wider">Agenda</span>
+            </a>
+        </div>
+    </nav>
+</div>

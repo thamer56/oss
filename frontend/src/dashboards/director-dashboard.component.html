@@ -1,0 +1,455 @@
+<!-- Director Dashboard -->
+<div class="bg-gray-50 min-h-screen font-sans flex flex-col md:flex-row">
+
+    <!-- Desktop Sidebar -->
+    <aside
+        class="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0 z-50 flex-shrink-0">
+        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <span class="text-white font-bold text-lg">OSS</span>
+            </div>
+            <div>
+                <h2 class="font-bold text-slate-800 leading-tight">{{ user?.nom || 'Portail' }}</h2>
+                <p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">{{ user?.role ||
+                    'Directeur' }}</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
+            <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mt-2 mb-2">{{ translate.t.menu }}
+            </p>
+            <a routerLink="/director" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform"
+                    style="font-variation-settings:'FILL' 1">home</span>
+                <span class="text-sm">{{ translate.t.dashboard }}</span>
+            </a>
+            <a routerLink="/equipe" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">badge</span>
+                <span class="text-sm">{{ translate.t.team }}</span>
+            </a>
+            <a routerLink="/budget" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span
+                    class="material-symbols-outlined group-hover:scale-110 transition-transform">account_balance_wallet</span>
+                <span class="text-sm">Budget</span>
+            </a>
+            <a routerLink="/project/new" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">add_circle</span>
+                <span class="text-sm">Créer un Projet</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-100">
+            <button (click)="logout()"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+                <span class="material-symbols-outlined text-lg">logout</span> {{ translate?.t?.logout || 'Déconnexion'
+                }}
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 pb-24 md:pb-0">
+
+        <!-- Top Header -->
+        <header
+            class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="md:hidden bg-blue-50 p-2 rounded-lg"><span
+                        class="material-symbols-outlined text-blue-600 text-xl font-bold">dashboard</span></div>
+                <h1 class="text-lg md:text-2xl font-bold leading-tight tracking-tight text-slate-800">{{
+                    translate.t.directorTitle }}</h1>
+            </div>
+            <div class="flex items-center gap-3 md:gap-5">
+                <!-- Notification Bell -->
+                <div class="relative">
+                    <button (click)="showNotifPanel = !showNotifPanel"
+                        class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span *ngIf="unreadCount > 0"
+                            class="absolute top-1 right-1 flex h-3.5 w-3.5 rounded-full bg-red-500 border border-white text-white text-[9px] font-bold items-center justify-center">
+                            {{ unreadCount > 9 ? '9+' : unreadCount }}
+                        </span>
+                    </button>
+                    <!-- Panel -->
+                    <div *ngIf="showNotifPanel"
+                        class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-800 text-sm">Notifications</h3>
+                            <button (click)="markAllRead(); showNotifPanel = false"
+                                class="text-xs text-blue-600 font-semibold hover:underline">Tout lu</button>
+                        </div>
+                        <div class="max-h-72 overflow-y-auto">
+                            <div *ngFor="let n of notifications" (click)="notifService.markRead(n.id)"
+                                class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-50"
+                                [class.bg-blue-50]="!n.read">
+                                <span class="material-symbols-outlined text-lg mt-0.5"
+                                    [ngClass]="n.type === 'warning' ? 'text-amber-500' : 'text-blue-500'">{{ n.icon
+                                    }}</span>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs text-slate-700" [class.font-semibold]="!n.read">{{ n.message }}
+                                    </p>
+                                    <p class="text-[10px] text-slate-400 mt-1">{{ n.createdAt | date:'dd/MM HH:mm' }}
+                                    </p>
+                                </div>
+                                <div *ngIf="!n.read" class="w-2 h-2 bg-blue-500 rounded-full mt-1 flex-shrink-0"></div>
+                            </div>
+                            <div *ngIf="notifications.length === 0" class="px-4 py-6 text-center text-slate-400">
+                                <span class="material-symbols-outlined text-2xl block mb-1">notifications_none</span>
+                                <p class="text-xs">Aucune notification</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:flex flex-col items-end">
+                    <span class="text-sm font-bold text-slate-800">{{ user?.nom || 'Sans Nom' }}</span>
+                    <span class="text-xs text-slate-500">{{ user?.role }} — Département Opérations</span>
+                </div>
+                <div
+                    class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">person</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="border-b border-slate-200 bg-white px-4 md:px-8">
+            <nav class="flex gap-1">
+                <button (click)="activeTab='vue'"
+                    class="flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors"
+                    [class]="activeTab==='vue' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+                    Vue d'Ensemble
+                </button>
+                <button (click)="activeTab='stats'"
+                    class="flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors"
+                    [class]="activeTab==='stats' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">bar_chart</span>
+                    Statistiques
+                </button>
+            </nav>
+        </div>
+
+        <!-- Stats Dashboard Tab -->
+        <div *ngIf="activeTab==='stats'">
+            <app-stats-dashboard [divisionId]="null" [userRole]="user?.role || ''"></app-stats-dashboard>
+        </div>
+
+        <main *ngIf="activeTab==='vue'" class="p-4 md:p-8 space-y-6 md:space-y-8">
+
+
+
+            <!-- Division Performance (2 cols to 4 cols) -->
+            <section>
+                <div class="flex items-center justify-between mb-4 px-1">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-800">Performance des Divisions</h2>
+                    <span
+                        class="text-xs md:text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">Q3
+                        Stats</span>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Biodiversité -->
+                    <div
+                        class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-3xl">🌱</span>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-800 mb-1">D04 (Bio)</h3>
+                        <p class="text-[11px] md:text-xs mt-3 text-slate-500 font-semibold">
+                            Tot: ${{ divisionStats['D04']?.totalBudget / 1000000 | number:'1.1-1' }}M |
+                            Dép: ${{ divisionStats['D04']?.totalSpent / 1000000 | number:'1.1-1' }}M
+                        </p>
+                    </div>
+
+                    <!-- Climat -->
+                    <div
+                        class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-3xl">🌍</span>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-800 mb-1">D01 (Climat)</h3>
+                        <p class="text-[11px] md:text-xs mt-3 text-slate-500 font-semibold">
+                            Tot: ${{ divisionStats['D01']?.totalBudget / 1000000 | number:'1.1-1' }}M |
+                            Dép: ${{ divisionStats['D01']?.totalSpent / 1000000 | number:'1.1-1' }}M
+                        </p>
+                    </div>
+
+                    <!-- Eau -->
+                    <div
+                        class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-3xl">💧</span>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-800 mb-1">D02 (Eau)</h3>
+                        <p class="text-[11px] md:text-xs mt-3 text-slate-500 font-semibold">
+                            Tot: ${{ divisionStats['D02']?.totalBudget / 1000000 | number:'1.1-1' }}M |
+                            Dép: ${{ divisionStats['D02']?.totalSpent / 1000000 | number:'1.1-1' }}M
+                        </p>
+                    </div>
+
+                    <!-- Terre -->
+                    <div
+                        class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-3xl">🌾</span>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-800 mb-1">D03 (Terre)</h3>
+                        <p class="text-[11px] md:text-xs mt-3 text-slate-500 font-semibold">
+                            Tot: ${{ divisionStats['D03']?.totalBudget / 1000000 | number:'1.1-1' }}M |
+                            Dép: ${{ divisionStats['D03']?.totalSpent / 1000000 | number:'1.1-1' }}M
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                <!-- Division Chiefs (Scrollable on mobile, Grid on desktop inside a 2-col span) -->
+                <section class="lg:col-span-2">
+                    <div class="flex items-center justify-between mb-4 px-1">
+                        <h2 class="text-lg md:text-xl font-bold text-slate-800">Chefs de Division</h2>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                        <div class="flex gap-4 md:grid md:grid-cols-4 md:gap-6 overflow-x-auto pb-2 md:pb-0"
+                            style="-ms-overflow-style:none;scrollbar-width:none;">
+                            <div *ngFor="let chief of chiefs"
+                                class="flex flex-col items-center min-w-[80px] md:min-w-0 md:p-3 md:hover:bg-slate-50 md:rounded-xl md:transition-colors md:cursor-pointer pb-2">
+                                <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-white shadow-md flex items-center justify-center text-3xl mb-3"
+                                    [ngClass]="chief.bg">{{chief.emoji}}</div>
+                                <p class="text-xs md:text-sm font-bold text-slate-800 text-center">{{chief.name}}</p>
+                                <p
+                                    class="text-[10px] md:text-[11px] text-slate-500 font-medium uppercase tracking-wider text-center mt-1">
+                                    {{chief.div}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Critical Alerts: dynamic real data -->
+                <section class="lg:col-span-1">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-800 mb-4 px-1">Alertes Critiques (<span
+                            class="text-red-500">{{ alerts.length }}</span>)</h2>
+
+                    <div class="space-y-4">
+                        <div *ngIf="alerts.length === 0"
+                            class="bg-white rounded-xl border border-slate-200 p-6 text-center text-slate-400 text-sm shadow-sm">
+                            ✅ Aucune alerte critique ou projet en retard.
+                        </div>
+
+                        <div *ngFor="let alert of alerts"
+                            class="flex items-start gap-3 p-4 rounded-xl shadow-sm transition-all hover:shadow-md"
+                            [ngClass]="alert.etat === 'A Risque' || alert.budget_depense > alert.budget_total ? 'bg-red-50 border border-red-100' : 'bg-amber-50 border border-amber-100'">
+                            <div class="p-2 rounded-lg mt-0.5 flex-shrink-0"
+                                [ngClass]="alert.etat === 'A Risque' || alert.budget_depense > alert.budget_total ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'">
+                                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">{{
+                                    alert.etat === 'A Risque' ||
+                                    alert.budget_depense > alert.budget_total ? 'warning' : 'schedule' }}</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-start mb-1.5 gap-2">
+                                    <h4 class="text-sm font-bold leading-tight truncate"
+                                        [ngClass]="alert.etat === 'A Risque' || alert.budget_depense > alert.budget_total ? 'text-red-900' : 'text-amber-900'">
+                                        {{ alert.nom_projet }}
+                                    </h4>
+                                    <span
+                                        class="text-[9px] font-bold px-2 py-0.5 text-white rounded shadow-sm uppercase tracking-wider flex-shrink-0"
+                                        [ngClass]="alert.etat === 'A Risque' || alert.budget_depense > alert.budget_total ? 'bg-red-600' : 'bg-amber-500'">
+                                        {{ alert.etat === 'A Risque' || alert.budget_depense > alert.budget_total ?
+                                        'Critical' : 'Warning' }}
+                                    </span>
+                                </div>
+                                <p class="text-xs leading-relaxed font-medium mb-1"
+                                    [ngClass]="alert.etat === 'A Risque' || alert.budget_depense > alert.budget_total ? 'text-red-800' : 'text-amber-800'">
+                                    Statut: {{ alert.etat }}. {{ alert.budget_depense > alert.budget_total ?
+                                    'Dépassement de budget détecté.' : '' }}
+                                    <br /><span class="opacity-75">Division: {{ alert.division_id }}</span>
+                                </p>
+                                <button [routerLink]="['/project', alert.id_projet]"
+                                    class="mt-2 text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors border"
+                                    [ngClass]="alert.etat === 'A Risque' || alert.budget_depense > alert.budget_total ? 'text-red-700 bg-red-100/50 border-red-200 hover:bg-red-200' : 'text-amber-700 bg-amber-100/50 border-amber-200 hover:bg-amber-200'">
+                                    Voir détails
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Project List with Filters -->
+            <section class="space-y-4">
+                <div class="flex items-center justify-between px-1">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-800">Tous les Projets ({{ projects.length }})
+                    </h2>
+                </div>
+
+                <!-- Filter Bar (Year + Division + Country) -->
+                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-wrap items-end gap-3">
+                    <!-- Année -->
+                    <div class="flex flex-col gap-1 min-w-[130px]">
+                        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Année</label>
+                        <select [(ngModel)]="filterYear" (ngModelChange)="applyFilters()"
+                            class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            <option value="">Toutes</option>
+                            <option *ngFor="let y of availableYears" [value]="y">{{ y }}</option>
+                        </select>
+                    </div>
+                    <!-- Division -->
+                    <div class="flex flex-col gap-1 min-w-[130px]">
+                        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Division</label>
+                        <select [(ngModel)]="filterDivision" (ngModelChange)="applyFilters()"
+                            class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            <option value="">Toutes</option>
+                            <option value="D01">D01 — Climat</option>
+                            <option value="D02">D02 — Eau</option>
+                            <option value="D03">D03 — Terre</option>
+                            <option value="D04">D04 — Biodiversité</option>
+                        </select>
+                    </div>
+                    <!-- Pays -->
+                    <div class="flex flex-col gap-1 flex-1 min-w-[200px]">
+                        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Pays
+                            bénéficiaire</label>
+                        <select [(ngModel)]="filterPays" (ngModelChange)="applyFilters()"
+                            class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            <option value="">Tous les pays</option>
+                            <option *ngFor="let pays of availablePays" [value]="pays">{{ pays }}</option>
+                        </select>
+                    </div>
+                    <!-- Reset -->
+                    <button (click)="resetFilters()"
+                        class="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-all"
+                        [class.opacity-40]="!filterYear && !filterDivision && !filterPays">
+                        <span
+                            class="material-symbols-outlined group-hover:scale-110 transition-transform">filter_alt_off</span>
+                        Réinitialiser
+                    </button>
+                    <span *ngIf="filterYear || filterDivision || filterPays"
+                        class="ml-auto px-2.5 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full">
+                        {{ activeFilterCount }} filtre(s) actif(s)
+                    </span>
+                </div>
+
+                <!-- Project Table -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 class="text-lg font-bold text-slate-800">Liste des Projets</h3>
+                        <span
+                            class="bg-white px-3 py-1 rounded-full text-xs font-bold text-slate-500 border border-slate-200 shadow-sm">{{
+                            projects.length }} Projet(s)</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr
+                                    class="bg-white border-b border-slate-100 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                    <th class="p-4 pl-6">Projet / Acronyme</th>
+                                    <th class="p-4">Division</th>
+                                    <th class="p-4">Pays</th>
+                                    <th class="p-4">Statut</th>
+                                    <th class="p-4 pr-6 text-right">Budget</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100/80 bg-white">
+                                <tr *ngFor="let p of projects" class="hover:bg-slate-50/80 transition-colors group">
+                                    <td class="p-4 pl-6">
+                                        <a [routerLink]="['/project', p.id_projet]"
+                                            class="flex flex-col hover:bg-slate-50 p-1 -ml-1 rounded transition-colors w-fit">
+                                            <span
+                                                class="text-sm font-bold text-slate-800 hover:text-indigo-600 transition-colors">{{
+                                                p.nom_projet }}</span>
+                                            <span class="text-xs text-slate-400 font-medium">{{ p.acronyme }}</span>
+                                        </a>
+                                    </td>
+                                    <td class="p-4">
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded bg-slate-100 text-slate-600 font-bold text-[10px] tracking-wider uppercase border border-slate-200">
+                                            {{ p.division_id }}
+                                        </span>
+                                    </td>
+                                    <td
+                                        class="p-4 text-xs text-slate-500 max-w-[180px] hover:max-w-none hover:whitespace-normal transition-all truncate">
+                                        {{ p.beneficiaires_pays }}</td>
+                                    <td class="p-4">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase border shadow-sm"
+                                            [ngClass]="{
+                                                    'bg-blue-50 text-blue-700 border-blue-200': p.etat === 'En Cours',
+                                                    'bg-emerald-50 text-emerald-700 border-emerald-200': p.etat === 'Clôturé',
+                                                    'bg-amber-50 text-amber-700 border-amber-200': p.etat === 'En Retard',
+                                                    'bg-red-50 text-red-700 border-red-200': p.etat === 'A Risque'
+                                                }">
+                                            <span class="w-1.5 h-1.5 rounded-full" [ngClass]="{
+                                                    'bg-blue-600': p.etat === 'En Cours',
+                                                    'bg-emerald-600': p.etat === 'Clôturé',
+                                                    'bg-amber-500': p.etat === 'En Retard',
+                                                    'bg-red-600': p.etat === 'A Risque'
+                                                }"></span>
+                                            {{ p.etat }}
+                                        </span>
+                                    </td>
+                                    <td class="p-4 pr-6">
+                                        <div class="flex items-baseline justify-end gap-1">
+                                            <span class="text-slate-400 font-medium text-xs">$</span>
+                                            <span class="text-sm font-bold text-slate-700">{{ p.budget_total | number
+                                                }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="projects.length === 0">
+                                    <td colspan="5" class="p-12 text-center text-slate-400 text-sm">
+                                        <span
+                                            class="material-symbols-outlined text-4xl mb-2 text-slate-300 block text-center mx-auto">search_off</span>
+                                        <p>Aucun projet ne correspond aux filtres sélectionnés.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Bottom Nav (Mobile Only) -->
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-1 pb-safe pt-1 z-50 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.15)]">
+        <div class="flex justify-around items-center py-1">
+            <a routerLink="/director" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1">home</span>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Accueil</span>
+            </a>
+            <a routerLink="/equipe" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">group</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Équipe</span>
+            </a>
+            <a routerLink="/budget" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Budget</span>
+            </a>
+            <a routerLink="/project/new" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">add_circle</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Créer</span>
+            </a>
+            <button (click)="logout()"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-red-500 hover:text-red-700 transition-colors">
+                <span class="material-symbols-outlined text-xl">logout</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider text-center px-1">Quitter</span>
+            </button>
+        </div>
+    </nav>
+
+</div>

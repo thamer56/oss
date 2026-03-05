@@ -1,0 +1,464 @@
+<div class="bg-gray-50 min-h-screen font-sans">
+
+    <!-- Header -->
+    <header
+        class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 py-4 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+            <button (click)="goBack()" class="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div>
+                <h1 class="text-base md:text-xl font-bold text-slate-800 leading-tight">{{ project?.acronyme }}</h1>
+                <p class="text-xs text-slate-500 hidden md:block">Fiche détaillée du projet</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <span *ngIf="project" class="px-3 py-1.5 text-xs font-bold rounded-full border"
+                [ngClass]="getStatusClass(project.etat)">
+                {{ project.etat }}
+            </span>
+            <button *ngIf="canEdit && !isEditingInfo" (click)="startEditInfo()"
+                class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-all">
+                <span class="material-symbols-outlined text-sm">edit</span>
+                Modifier
+            </button>
+        </div>
+    </header>
+
+    <!-- Not Found -->
+    <div *ngIf="!project" class="flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
+        <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">folder_off</span>
+        <h2 class="text-xl font-bold text-slate-700 mb-2">Projet introuvable</h2>
+        <p class="text-slate-500 mb-6">Ce projet n'existe pas ou a été supprimé.</p>
+        <button (click)="goBack()" class="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-sm">
+            Retour au tableau de bord
+        </button>
+    </div>
+
+    <div *ngIf="project" class="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-10 space-y-6">
+
+        <!-- ✅💰 Double Indicator (Task + Budget) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Task Progress -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">✅</span>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Progression des tâches</p>
+                    </div>
+                    <span class="text-2xl font-black text-emerald-600">{{ taskProgress }}%</span>
+                </div>
+                <div class="h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
+                    <div class="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full transition-all duration-700"
+                        [style.width.%]="taskProgress"></div>
+                </div>
+                <p class="text-xs text-slate-400">{{ completedTaskCount }} / {{ totalTaskCount }} tâches complétées</p>
+            </div>
+
+            <!-- Budget Progress -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">💰</span>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Budget consommé</p>
+                    </div>
+                    <span class="text-2xl font-black"
+                        [ngClass]="budgetProgress > 90 ? 'text-red-600' : budgetProgress > 70 ? 'text-amber-600' : 'text-blue-600'">
+                        {{ budgetProgress }}%
+                    </span>
+                </div>
+                <div class="h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
+                    <div class="h-full rounded-full transition-all duration-700"
+                        [style.width.%]="(budgetProgress > 100 ? 100 : budgetProgress)"
+                        [ngClass]="budgetProgress > 90 ? 'bg-gradient-to-r from-red-400 to-red-600' : budgetProgress > 70 ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-blue-400 to-blue-600'">
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400">${{ project.budget_depense | number }} / ${{ project.budget_total |
+                    number }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Hero Card – Edit or View -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- EDIT MODE -->
+            <div *ngIf="isEditingInfo" class="p-6 space-y-4">
+                <h3 class="text-sm font-bold text-slate-600 uppercase tracking-wider mb-2">Modifier le Projet</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase">Nom du Projet</label>
+                        <input [(ngModel)]="editModel.nom_projet" type="text"
+                            class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Année de Début</label>
+                        <input [(ngModel)]="editModel.annee_debut" type="number"
+                            class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Année de Fin</label>
+                        <input [(ngModel)]="editModel.annee_fin" type="number"
+                            class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Statut</label>
+                        <select [(ngModel)]="editModel.etat"
+                            class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="En Cours">En Cours</option>
+                            <option value="En Retard">En Retard</option>
+                            <option value="A Risque">A Risque</option>
+                            <option value="Clôturé">Clôturé</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase">Description</label>
+                        <textarea [(ngModel)]="editModel.description" rows="4"
+                            class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Chef de Projet</label>
+                        <select [(ngModel)]="editModel.chef_projet_id"
+                            class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option [ngValue]="null">-- Aucun assigné --</option>
+                            <option *ngFor="let chef of availableChefs" [value]="chef.id_user">
+                                {{ chef.nom }} ({{ chef.division_id }})
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Pays Bénéficiaires</label>
+                        <input [(ngModel)]="editModel.beneficiaires_pays" type="text"
+                            class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Budget Total ($)</label>
+                        <input [(ngModel)]="editModel.budget_total" type="number"
+                            class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button (click)="saveEditInfo()"
+                        class="px-5 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all">
+                        Enregistrer
+                    </button>
+                    <button (click)="cancelEditInfo()"
+                        class="px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl border border-slate-200 transition-all">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW MODE -->
+            <div *ngIf="!isEditingInfo" class="p-6 md:p-8">
+                <div class="flex items-start gap-4">
+                    <div
+                        class="w-14 h-14 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-3xl flex-none">
+                        {{ getAxisEmoji(project.division_id) }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-xl md:text-2xl font-bold text-slate-900 leading-tight">{{ project.nom_projet }}
+                        </h2>
+                        <p class="text-sm font-bold text-blue-600 mt-1 uppercase tracking-wide">{{ project.acronyme }}
+                        </p>
+                        <p class="text-sm text-slate-600 mt-3 leading-relaxed whitespace-pre-line">{{
+                            project.description }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Metrics Grid -->
+            <div *ngIf="!isEditingInfo" class="grid grid-cols-2 md:grid-cols-4 border-t border-slate-100">
+                <div class="p-4 border-r border-slate-100">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Division</p>
+                    <p class="text-sm font-bold text-slate-800">{{ project.division_id }}</p>
+                </div>
+                <div class="p-4 border-r border-slate-100">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Budget Total</p>
+                    <p class="text-sm font-bold text-slate-800">${{ project.budget_total | number }}</p>
+                </div>
+                <div class="p-4">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Période</p>
+                    <p class="text-xs font-medium text-slate-700">{{ project.annee_debut || '—' }} → {{
+                        project.annee_fin ||
+                        '—' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two column layout -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <!-- Left: Tasks + More Info + Documents -->
+            <div class="md:col-span-2 space-y-6">
+
+                <!-- Task Management -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">
+                            Tâches ({{ completedTaskCount }}/{{ totalTaskCount }})
+                        </h3>
+                        <div *ngIf="canEdit" class="flex items-center gap-4">
+                            <!-- AI Generation Button -->
+                            <button *ngIf="totalTaskCount === 0" (click)="generateTasksWithAI()"
+                                [disabled]="isGeneratingAI"
+                                class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-lg shadow-sm transition-all disabled:opacity-50">
+                                <span *ngIf="!isGeneratingAI"
+                                    class="material-symbols-outlined text-sm">auto_awesome</span>
+                                <span *ngIf="isGeneratingAI"
+                                    class="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                                {{ isGeneratingAI ? 'Génération...' : 'Générer avec IA' }}
+                            </button>
+
+                            <div class="flex items-center gap-2 text-xs text-slate-400">
+                                <span class="material-symbols-outlined text-sm text-blue-500">edit</span>
+                                <span class="text-blue-500 font-semibold">Mode édition</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 space-y-2">
+                        <!-- AI Error Message -->
+                        <div *ngIf="aiError"
+                            class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-2">
+                            <span class="material-symbols-outlined text-sm mt-0.5">error</span>
+                            <span>{{ aiError }}</span>
+                        </div>
+                        <!-- No tasks -->
+                        <div *ngIf="!project.tasks || project.tasks.length === 0" class="text-center py-8">
+                            <span class="material-symbols-outlined text-4xl text-slate-200 mb-2 block">task_alt</span>
+                            <p class="text-sm text-slate-400">Aucune tâche définie pour ce projet</p>
+                        </div>
+
+                        <!-- Task list -->
+                        <div *ngFor="let task of project.tasks"
+                            class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100">
+
+                            <!-- Edit mode -->
+                            <ng-container *ngIf="editingTaskId === task.id">
+                                <div class="flex-1 flex items-center gap-2 flex-wrap">
+                                    <input [(ngModel)]="editingTaskTitle" type="text"
+                                        class="flex-1 min-w-0 bg-white border border-blue-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none">
+                                    <input [(ngModel)]="editingTaskBudget" type="number" placeholder="Budget $"
+                                        class="w-28 bg-white border border-blue-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none">
+                                    <button (click)="saveEditTask()"
+                                        class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg">
+                                        <span class="material-symbols-outlined text-sm">check</span>
+                                    </button>
+                                    <button (click)="cancelEditTask()"
+                                        class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg">
+                                        <span class="material-symbols-outlined text-sm">close</span>
+                                    </button>
+                                </div>
+                            </ng-container>
+
+                            <!-- Display mode -->
+                            <ng-container *ngIf="editingTaskId !== task.id">
+                                <button (click)="toggleTask(task.id)"
+                                    class="w-5 h-5 rounded-full border-2 flex-none transition-all flex items-center justify-center"
+                                    [ngClass]="task.completed ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 hover:border-emerald-400'">
+                                    <span *ngIf="task.completed"
+                                        class="material-symbols-outlined text-white text-xs">check</span>
+                                </button>
+                                <span class="flex-1 text-sm" [class.line-through]="task.completed"
+                                    [class.text-slate-400]="task.completed" [class.text-slate-700]="!task.completed">
+                                    {{ task.title }}
+                                </span>
+                                <span *ngIf="task.estimatedBudget"
+                                    class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex-none">
+                                    ${{ task.estimatedBudget | number }}
+                                </span>
+                                <div *ngIf="canEdit"
+                                    class="opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity flex-none">
+                                    <button (click)="startEditTask(task)"
+                                        class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
+                                        <span class="material-symbols-outlined text-sm">edit</span>
+                                    </button>
+                                    <button (click)="deleteTask(task.id)"
+                                        class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <!-- Add Task (only for authorized users) -->
+                        <div *ngIf="canEdit" class="mt-4 pt-4 border-t border-slate-100">
+                            <div class="flex gap-2 flex-wrap">
+                                <input [(ngModel)]="newTaskTitle" type="text" placeholder="Nouvelle tâche..."
+                                    class="flex-1 min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    (keyup.enter)="addTask()">
+                                <input [(ngModel)]="newTaskBudget" type="number" placeholder="Budget $"
+                                    class="w-28 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                <button (click)="addTask()" [disabled]="!newTaskTitle.trim()"
+                                    class="px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl disabled:opacity-40 transition-all flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">add</span>
+                                    Ajouter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Info -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">{{
+                        translate.t.additionalInfo }}</h3>
+                    <dl class="space-y-4">
+                        <div class="flex flex-col gap-1">
+                            <dt class="text-xs font-semibold text-slate-400 uppercase">{{ translate.t.mainTheme }}</dt>
+                            <dd class="text-sm font-medium text-slate-800">{{ project.theme_principal }}</dd>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <dt class="text-xs font-semibold text-slate-400 uppercase">{{
+                                translate.t.beneficiaryCountries }}</dt>
+                            <dd class="text-sm font-medium text-slate-800">{{ project.beneficiaires_pays }}</dd>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <dt class="text-xs font-semibold text-slate-400 uppercase">{{ translate.t.financialPartners
+                                }}</dt>
+                            <dd class="text-sm font-medium text-slate-800">{{ project.partenaires_financiers }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Documents Section -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 px-1">Documents du Projet
+                    </h3>
+                    <app-file-upload [projectId]="project.id_projet"></app-file-upload>
+                </div>
+            </div>
+
+            <!-- Right: Chef + Budget -->
+            <div class="space-y-6">
+
+                <!-- Chef de Projet -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Responsable</h3>
+
+                    <div *ngIf="chefDeProjet" class="flex flex-col items-center text-center gap-3">
+                        <div
+                            class="w-16 h-16 rounded-full bg-blue-100 border-2 border-blue-200 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-blue-700">{{ (chefDeProjet.nom || 'CP').substring(0,
+                                2).toUpperCase() }}</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 text-base">{{ chefDeProjet.nom }}</p>
+                            <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide">{{
+                                chefDeProjet.role }}</p>
+                            <p class="text-xs text-slate-500 mt-1">{{ chefDeProjet.division_id }}</p>
+                        </div>
+                        <div class="w-full pt-3 border-t border-slate-100">
+                            <div class="flex items-center gap-2 text-left">
+                                <span class="material-symbols-outlined text-slate-400 text-sm">person</span>
+                                <span class="text-xs text-slate-600 font-mono">{{ chefDeProjet.username }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="!chefDeProjet" class="flex flex-col items-center text-center gap-3 py-4">
+                        <span class="material-symbols-outlined text-4xl text-slate-300">person_off</span>
+                        <p class="text-sm text-slate-500">Aucun chef de projet assigné</p>
+                    </div>
+                </div>
+
+                <!-- Budget Card -->
+                <div
+                    class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 opacity-5 translate-x-4 -translate-y-4">
+                        <span class="material-symbols-outlined text-9xl">payments</span>
+                    </div>
+                    <div class="relative z-10 space-y-4">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gestion du Budget</p>
+
+                        <div>
+                            <p class="text-xs text-slate-400 mb-1">Budget Alloué</p>
+                            <p class="text-2xl font-bold">${{ (project.budget_total / 1000000 | number:'1.1-2') }}M</p>
+                        </div>
+
+                        <div>
+                            <p class="text-xs text-slate-400 mb-1">Budget Dépensé</p>
+                            <p class="text-xl font-bold text-emerald-400">${{ project.budget_depense | number }}</p>
+                        </div>
+
+                        <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-700"
+                                [style.width.%]="(budgetProgress > 100 ? 100 : budgetProgress)"
+                                [ngClass]="budgetProgress > 90 ? 'bg-red-500' : budgetProgress > 70 ? 'bg-amber-400' : 'bg-emerald-400'">
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-slate-300">{{ budgetProgress }}% consommé</p>
+
+                        <!-- Manual adjustment for chef de projet -->
+                        <div *ngIf="canEdit" class="border-t border-slate-700 pt-4">
+                            <p class="text-xs text-slate-400 mb-3 font-semibold">Ajustement manuel</p>
+                            <div class="flex items-center gap-2">
+                                <button (click)="adjustSpent(-5000)"
+                                    class="flex-1 py-1.5 text-xs font-bold text-slate-300 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all flex items-center justify-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">remove</span>
+                                    -5K
+                                </button>
+                                <button (click)="adjustSpent(5000)"
+                                    class="flex-1 py-1.5 text-xs font-bold text-emerald-300 bg-emerald-900/40 hover:bg-emerald-900/60 rounded-lg transition-all flex items-center justify-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">add</span>
+                                    +5K
+                                </button>
+                            </div>
+                            <div class="flex gap-2 mt-2">
+                                <button (click)="adjustSpent(-50000)"
+                                    class="flex-1 py-1.5 text-xs font-bold text-slate-300 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all">
+                                    -50K
+                                </button>
+                                <button (click)="adjustSpent(50000)"
+                                    class="flex-1 py-1.5 text-xs font-bold text-emerald-300 bg-emerald-900/40 hover:bg-emerald-900/60 rounded-lg transition-all">
+                                    +50K
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Inline Preview Modal -->
+    <div *ngIf="activePreview" class="fixed inset-0 z-[999] bg-black/80 flex items-center justify-center p-4"
+        (click)="activePreview = null">
+        <div class="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+            (click)="$event.stopPropagation()">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-slate-50">
+                <span class="font-bold text-slate-800 text-sm truncate">{{ activePreview.name }}</span>
+                <div class="flex gap-2">
+                    <button (click)="download(activePreview)"
+                        class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
+                        <span class="material-symbols-outlined">download</span>
+                    </button>
+                    <button (click)="activePreview = null"
+                        class="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-auto flex items-center justify-center bg-slate-900 p-4"
+                style="min-height:300px">
+                <img *ngIf="isImage(activePreview.type)" [src]="activePreview.dataUrl" alt="preview"
+                    class="max-w-full max-h-[75vh] rounded-lg object-contain shadow-lg" />
+                <video *ngIf="isVideo(activePreview.type)" [src]="activePreview.dataUrl" controls autoplay
+                    class="max-w-full max-h-[75vh] rounded-lg shadow-lg"></video>
+                <iframe *ngIf="isPdf(activePreview.type)" [src]="activePreview.dataUrl | safeUrl"
+                    class="w-full h-[75vh] rounded-lg" frameborder="0"></iframe>
+                <div *ngIf="isOther(activePreview.type)" class="text-center text-white">
+                    <span class="material-symbols-outlined text-6xl mb-4 block">draft</span>
+                    <p class="font-bold">Aperçu non disponible</p>
+                    <button (click)="download(activePreview)"
+                        class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold">
+                        Télécharger le fichier
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

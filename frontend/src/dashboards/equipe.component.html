@@ -1,0 +1,321 @@
+<!-- Equipe Dashboard -->
+<div class="bg-gray-50 min-h-screen font-sans flex flex-col md:flex-row">
+
+    <!-- Desktop Sidebar -->
+    <aside
+        class="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0 z-50 flex-shrink-0">
+        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <span class="text-white font-bold text-lg">OSS</span>
+            </div>
+            <div>
+                <h2 class="font-bold text-slate-800 leading-tight">{{ currentUser?.nom || 'Portail' }}</h2>
+                <p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">{{ currentUser?.role }}</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
+            <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mt-2 mb-2">{{ translate.t.menu }}
+            </p>
+
+            <!-- SUPER ADMIN SIDEBAR -->
+            <ng-container *ngIf="currentUser?.role === 'se'">
+                <a routerLink="/super-admin" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">home</span>
+                    <span class="text-sm">{{ translate.t.dashboard }}</span>
+                </a>
+                <a routerLink="/equipe" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">group</span>
+                    <span class="text-sm">{{ translate.t.team }}</span>
+                </a>
+                <a routerLink="/budget" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform"
+                        style="font-variation-settings:'FILL' 1">account_balance_wallet</span>
+                    <span class="text-sm">Budget</span>
+                </a>
+                <a routerLink="/project/new" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">add_circle</span>
+                    <span class="text-sm">Créer un Projet</span>
+                </a>
+                <a routerLink="/admin/signup" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">person_add</span>
+                    <span class="text-sm">{{ translate.t.manageStaff }}</span>
+                </a>
+            </ng-container>
+
+            <!-- DIRECTOR SIDEBAR -->
+            <ng-container *ngIf="currentUser?.role === 'directeur'">
+                <a routerLink="/director" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">home</span>
+                    <span class="text-sm">{{ translate.t.dashboard }}</span>
+                </a>
+                <a routerLink="/equipe" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">badge</span>
+                    <span class="text-sm">{{ translate.t.team }}</span>
+                </a>
+                <a routerLink="/budget" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform"
+                        style="font-variation-settings:'FILL' 1">account_balance_wallet</span>
+                    <span class="text-sm">Budget</span>
+                </a>
+                <a routerLink="/project/new" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">add_circle</span>
+                    <span class="text-sm">Créer un Projet</span>
+                </a>
+            </ng-container>
+
+            <!-- DIVISION CHIEF SIDEBAR -->
+            <ng-container *ngIf="currentUser?.role === 'chef_division'">
+                <a routerLink="/division-chief" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+                    <span class="text-sm">Division</span>
+                </a>
+                <a routerLink="/equipe" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">group</span>
+                    <span class="text-sm">{{ translate.t.team }}</span>
+                </a>
+                <a routerLink="/budget" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform"
+                        style="font-variation-settings:'FILL' 1">payments</span>
+                    <span class="text-sm">{{ translate.t.budget }}</span>
+                </a>
+            </ng-container>
+
+            <!-- PROJECT MANAGER SIDEBAR -->
+            <ng-container *ngIf="currentUser?.role === 'chef_projet'">
+                <a routerLink="/pm-tasks" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">assignment</span>
+                    <span class="text-sm">Tâches</span>
+                </a>
+                <a routerLink="/project-manager" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">folder</span>
+                    <span class="text-sm">Projets</span>
+                </a>
+                <a routerLink="/budget" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform"
+                        style="font-variation-settings:'FILL' 1">account_balance_wallet</span>
+                    <span class="text-sm">Dépenses</span>
+                </a>
+                <a routerLink="/pm-calendar" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
+                    <span
+                        class="material-symbols-outlined group-hover:scale-110 transition-transform">calendar_today</span>
+                    <span class="text-sm">Calendrier</span>
+                </a>
+            </ng-container>
+
+        </nav>
+
+        <div class="p-4 border-t border-slate-100 flex flex-col gap-2">
+            <button (click)="goBack()"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors border border-slate-200">
+                <span class="material-symbols-outlined text-lg">arrow_back</span>
+                Retour
+            </button>
+            <button (click)="logout()"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+                <span class="material-symbols-outlined text-lg">logout</span>
+                {{ translate.t.logout || 'Déconnexion' }}
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 pb-24 md:pb-0">
+
+        <!-- Header -->
+        <header
+            class="flex items-center justify-between px-4 md:px-8 py-4 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40">
+            <div class="flex items-center gap-3">
+                <div class="p-2 md:p-3 bg-blue-50 rounded-lg"><span
+                        class="material-symbols-outlined text-blue-600 text-xl md:text-2xl font-bold">
+                        group
+                    </span></div>
+                <div>
+                    <h1 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight leading-tight">{{
+                        translate.t.teamTitle }}</h1>
+                    <p class="text-[10px] md:text-xs text-slate-500 font-semibold tracking-wide uppercase mt-0.5">{{
+                        translate.t.teamDesc }}</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 md:gap-4">
+                <div class="hidden md:block text-right">
+                    <p class="text-sm font-bold text-slate-800 leading-none mb-1">{{ currentUser?.nom || 'User' }}</p>
+                    <p class="text-[10px] items-center text-emerald-600 font-bold uppercase tracking-wider">
+                        • En Ligne
+                    </p>
+                </div>
+                <div
+                    class="h-10 w-10 md:h-12 md:w-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 border-2 border-white cursor-pointer hover:scale-105 transition-transform">
+                    <span class="text-white font-bold text-sm md:text-base">{{ currentUser?.nom?.charAt(0) || 'U'
+                        }}</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 md:p-8">
+
+            <div *ngIf="teamMembers.length === 0"
+                class="text-center py-20 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <span class="material-icons text-6xl text-slate-300 mb-4 block">group_off</span>
+                <h3 class="text-xl font-medium text-slate-800">{{ translate.t.noTeamMembers }}</h3>
+                <p class="text-slate-500 mt-2">Votre équipe est actuellement vide selon vos droits d'accès.</p>
+            </div>
+
+            <!-- CARDS GRID -->
+            <div *ngIf="teamMembers.length > 0"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+                <div *ngFor="let member of teamMembers"
+                    class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all group relative">
+                    <div class="h-20 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+                    <div class="px-6 pb-6 relative">
+
+                        <div
+                            class="h-16 w-16 bg-white rounded-full p-1 absolute -top-8 border border-slate-100 shadow-sm">
+                            <div
+                                class="w-full h-full bg-slate-100 rounded-full flex items-center justify-center text-xl font-bold text-slate-600">
+                                {{ member.nom.charAt(0) | uppercase }}
+                            </div>
+                        </div>
+
+                        <div class="pt-10 flex flex-col items-start">
+                            <h3 class="text-lg font-bold text-slate-800 mb-1 truncate w-full">{{ member.nom }}</h3>
+                            <p class="text-sm text-slate-500 mb-3 truncate w-full">@{{ member.username }}</p>
+
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span
+                                    class="px-2 py-1 text-xs font-semibold rounded-md border border-slate-100 shadow-sm"
+                                    [ngClass]="getRoleColor(member.role)">
+                                    {{ member.role }}
+                                </span>
+                                <span *ngIf="member.division_id && member.division_id !== 'ALL'"
+                                    class="px-2 py-1 text-xs font-semibold rounded-md bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center gap-1">
+                                    <span class="material-icons" style="font-size: 14px;">domain</span>
+                                    {{ member.division_id }}
+                                </span>
+                            </div>
+
+                            <div *ngIf="member.projet_id && member.role === 'chef_projet'"
+                                class="w-full mt-auto pt-4 border-t border-slate-100">
+                                <p class="text-xs text-slate-500 uppercase font-semibold mb-1">Projet Assigné</p>
+                                <p class="text-sm text-slate-800 font-medium truncate flex items-center gap-2">
+                                    <span class="material-icons text-blue-500" style="font-size: 16px;">work</span>
+                                    {{ member.projet_id }}
+                                </p>
+                            </div>
+
+                            <!-- Password Management for Super Admins -->
+                            <div *ngIf="canEditPasswords" class="w-full mt-auto pt-4 border-t border-slate-100">
+                                <div class="flex items-center justify-between mb-1 text-slate-500">
+                                    <p class="text-xs uppercase font-semibold">Mot de Passe</p>
+                                    <button *ngIf="editingPasswordId !== member._id" (click)="startEditPassword(member)"
+                                        class="p-1 hover:bg-slate-100 rounded-lg text-blue-500 hover:text-blue-700 transition">
+                                        <span class="material-icons" style="font-size: 16px;">edit</span>
+                                    </button>
+                                </div>
+
+                                <!-- Display Mode -->
+                                <div *ngIf="editingPasswordId !== member._id" class="flex items-center gap-2">
+                                    <span class="material-icons text-slate-400" style="font-size: 16px;">key</span>
+                                    <p class="text-sm font-mono text-slate-800 truncate">{{ member.password || 'Non
+                                        défini'
+                                        }}</p>
+                                </div>
+
+                                <!-- Edit Mode -->
+                                <div *ngIf="editingPasswordId === member._id" class="flex items-center gap-2">
+                                    <input [(ngModel)]="newPassword" type="text"
+                                        class="flex-1 w-full bg-slate-50 border border-blue-300 rounded px-2 py-1 text-sm font-mono focus:ring-2 focus:ring-blue-400 outline-none">
+                                    <button (click)="savePassword(member)" [disabled]="!newPassword.trim()"
+                                        class="p-1 text-emerald-600 hover:bg-emerald-50 rounded disabled:opacity-50">
+                                        <span class="material-icons" style="font-size: 16px;">check</span>
+                                    </button>
+                                    <button (click)="cancelEditPassword()"
+                                        class="p-1 text-red-500 hover:bg-red-50 rounded">
+                                        <span class="material-icons" style="font-size: 16px;">close</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Bottom Nav (Mobile Only) — Role-Aware -->
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-1 pb-safe pt-1 z-50 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.15)]">
+        <div class="flex justify-around items-center py-1">
+            <a [routerLink]="currentUser?.role === 'se' ? '/super-admin' : currentUser?.role === 'directeur' ? '/director' : currentUser?.role === 'chef_division' ? '/division-chief' : '/project-manager'"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1">home</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider text-center px-1">{{ currentUser?.role
+                    === 'chef_projet' ? 'Projets' : 'Accueil' }}</span>
+            </a>
+            <a *ngIf="currentUser?.role !== 'chef_projet'" routerLink="/equipe" routerLinkActive="text-blue-600"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">group</span>
+                <span class="text-[9px] font-bold uppercase tracking-wider text-center px-1">Équipe</span>
+            </a>
+            <a routerLink="/budget" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider text-center px-1">Budget</span>
+            </a>
+            <a *ngIf="currentUser?.role !== 'chef_projet'" routerLink="/project/new"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">add_circle</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider text-center px-1">Créer</span>
+            </a>
+            <!-- Only Super Admin sees Admin Signup -->
+            <a *ngIf="currentUser?.role === 'se'" routerLink="/admin/signup"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-slate-400 hover:text-blue-600 transition-colors">
+                <span class="material-symbols-outlined text-xl">person_add</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider text-center px-1">Admin</span>
+            </a>
+            <!-- Only Chef Projet sees explicit logout in nav to mirror their own dashboard -->
+            <button *ngIf="currentUser?.role === 'chef_projet'" (click)="logout()"
+                class="flex flex-1 flex-col items-center gap-0.5 py-1 text-red-500 hover:text-red-700 transition-colors">
+                <span class="material-symbols-outlined text-xl">logout</span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider text-center px-1">Quitter</span>
+            </button>
+        </div>
+    </nav>
+</div>

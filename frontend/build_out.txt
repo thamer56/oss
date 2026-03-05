@@ -1,0 +1,28 @@
+
+> my-angular-app@0.0.1 build
+> set NODE_OPTIONS=--openssl-legacy-provider && ng build
+
+- Generating browser application bundles (phase: setup)...
+(node:20556) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
+- Generating ES5 bundles for differential loading...
+✔ ES5 bundle generation complete.
+- Copying assets...
+✔ Copying assets complete.
+- Generating index html...
+✔ Index html generation complete.
+
+Initial Chunk Files | Names                |      Size
+main-es5.js         | main                 | 367.66 kB
+main-es2017.js      | main                 | 322.26 kB
+polyfills-es5.js    | polyfills-es5        | 133.70 kB
+polyfills-es2017.js | polyfills            |  32.80 kB
+runtime-es2017.js   | runtime              |   1.17 kB
+runtime-es5.js      | runtime              |   1.17 kB
+
+| Initial ES5 Total    | 502.53 kB
+| Initial ES2017 Total | 356.23 kB
+
+Build at: 2026-02-20T01:11:43.364Z - Hash: 88c0aa6ddabd36a857bc - Time: 40994ms

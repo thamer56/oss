@@ -1,0 +1,8 @@
+.split-bg {
+    background: linear-gradient(180deg, #0067B1 60%, #F2B233 40%);
+}
+
+.map-overlay {
+    opacity: 0.08;
+    pointer-events: none;
+}
