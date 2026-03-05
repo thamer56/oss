@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://your-production-api-url.com'
+  apiUrl: 'https://oss-backend-r9wb.onrender.com/api'
 };
