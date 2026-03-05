@@ -1,7 +1,9 @@
 const { GoogleGenAI } = require("@google/genai");
 
 // The client gets the API key from the environment variable GEMINI_API_KEY
-const ai = new GoogleGenAI({});
+// Fallback to a dummy key to prevent server crash if not provided in environment
+const apiKey = process.env.GEMINI_API_KEY || 'dummy_key_to_prevent_crash';
+const ai = new GoogleGenAI({ apiKey });
 
 exports.generateTasks = async (req, res) => {
     const { description } = req.body;
