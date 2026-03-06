@@ -14,6 +14,7 @@ import { EquipeComponent } from '../dashboards/equipe.component';
 import { BudgetComponent } from '../dashboards/budget.component';
 import { PmTasksComponent } from './dashboards/pm-tasks/pm-tasks.component';
 import { PmCalendarComponent } from './dashboards/pm-calendar/pm-calendar.component';
+import { TvDashboardComponent } from '../dashboards/tv-dashboard.component';
 
 const routes: Routes = [
   // Default redirect
@@ -37,6 +38,7 @@ const routes: Routes = [
   { path: 'budget', component: BudgetComponent },
   { path: 'pm-tasks', component: PmTasksComponent },
   { path: 'pm-calendar', component: PmCalendarComponent },
+  { path: 'tv-dashboard', component: TvDashboardComponent },
 
   // Fallback
   { path: '**', redirectTo: 'login' },

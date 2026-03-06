@@ -100,7 +100,16 @@ export class AuthService {
     }
 
     getDashboardRoute(role: string): string {
-        switch (role?.toLowerCase()) {
+        const ua = navigator.userAgent.toLowerCase();
+        const isSmartTV = /smart[-_]?tv|hbbtv|webos|tizen|roku|appletv|android tv|viera|bravia|netcast/i.test(ua);
+        const r = role?.toLowerCase() || "";
+
+        // If it's a TV and user is a Director or SuperAdmin, force TV dashboard
+        if (isSmartTV && (r === 'se' || r === 'superadmin' || r === 'directeur')) {
+            return '/tv-dashboard';
+        }
+
+        switch (r) {
             case 'se':
                 return '/super-admin';
             case 'directeur':
