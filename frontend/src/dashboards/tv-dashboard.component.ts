@@ -60,7 +60,7 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.loadData();
         this.projectService.projects$.subscribe(projs => {
-            this.projects = projs.slice(0, 15);
+            this.projects = projs;
         });
 
         // Auto-refresh data every 60 seconds
