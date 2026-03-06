@@ -1,4 +1,5 @@
 const { GoogleGenAI } = require("@google/genai");
+const pool = require('../db/postgres');
 
 // The client gets the API key from the environment variable GEMINI_API_KEY
 // Fallback to a dummy key to prevent server crash if not provided in environment
@@ -74,10 +75,29 @@ exports.chat = async (req, res) => {
         const roleStr = context?.role || 'Collaborateur';
         const divisionStr = context?.division || 'Toutes';
 
+        let projects = [];
+        try {
+            const roleL = roleStr.toLowerCase();
+            const isAdmin = ['se', 'directeur', 'superadmin'].includes(roleL);
+            if (isAdmin || divisionStr === 'Toutes' || divisionStr === 'ALL') {
+                const { rows } = await pool.query('SELECT nom_projet, acronyme, etat, budget_total, budget_depense, avancement, chef_projet_id, division_id FROM projects LIMIT 50');
+                projects = rows;
+            } else if (divisionStr) {
+                const { rows } = await pool.query('SELECT nom_projet, acronyme, etat, budget_total, budget_depense, avancement, chef_projet_id, division_id FROM projects WHERE division_id = $1 LIMIT 50', [divisionStr]);
+                projects = rows;
+            }
+        } catch (dbErr) {
+            console.error('Error fetching context projects', dbErr.message);
+        }
+
+        const projectData = projects.length > 0
+            ? `\n\nBase de données interne des projets actuellement accessibles pour cet utilisateur (format JSON) :\n${JSON.stringify(projects)}\nTu vas utiliser ces données réelles pour répondre avec précision (par exemple pour donner le solde du budget, le taux d'avancement, le responsable, l'état, ou la région du projet le plus proche). N'invente jamais de data.`
+            : `\n\nAucune donnée de projet accessible.`;
+
         const prompt = `Tu es l'assistant IA de l'Observatoire du Sahara et du Sahel (OSS).
 L'utilisateur avec qui tu parles possède le rôle "${roleStr}" et appartient à la division "${divisionStr}".
 RÈGLE DE SÉCURITÉ CRITIQUE : Si l'utilisateur demande des informations sur des projets ou stratégies, tu dois te limiter UNIQUEMENT à sa propre division ("${divisionStr}"). S'il demande des informations sur une AUTRE division (exemple: il est dans 'Eau' et demande pour 'Terre'), explique-lui poliment qu'il n'a pas les droits pour accéder aux projets des autres divisions.
-RÈGLE DE LANGUE : Tu dois OBLIGATOIREMENT répondre en français uniquement, peu importe la langue utilisée par l'utilisateur.
+RÈGLE DE LANGUE : Tu dois OBLIGATOIREMENT répondre en français uniquement, peu importe la langue utilisée par l'utilisateur.${projectData}
 
 Voici son message :
 "${message}"`;
