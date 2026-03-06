@@ -83,6 +83,7 @@ exports.chat = async (req, res) => {
             const querySelect = `
                 SELECT 
                     p.nom_projet, p.acronyme, p.etat, p.budget_total, p.budget_depense, p.avancement, p.beneficiaires_pays, p.division_id,
+                    p.description, p.theme_principal, p.annee_debut, p.annee_fin, p.duree,
                     cp.nom AS nom_chef_projet,
                     (SELECT nom FROM user_profiles WHERE role = 'chef_division' AND division_id = p.division_id LIMIT 1) AS nom_chef_division
                 FROM projects p
