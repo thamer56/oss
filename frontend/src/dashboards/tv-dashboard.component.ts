@@ -13,7 +13,6 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
     projects: Project[] = [];
-    refreshInterval: any;
     user: any = null;
     isFullscreen = false;
 
@@ -64,11 +63,6 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.projects = projs;
         });
 
-        // Auto-refresh data every 60 seconds
-        this.refreshInterval = setInterval(() => {
-            this.loadData();
-        }, 60000);
-
         // Listen for fullscreen changes (e.g., when user presses Esc)
         document.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
     }
@@ -89,7 +83,6 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (this.refreshInterval) clearInterval(this.refreshInterval);
         document.removeEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
     }
 
