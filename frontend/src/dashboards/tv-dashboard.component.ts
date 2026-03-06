@@ -41,11 +41,10 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.startAutoScroll();
+        // Auto-scroll disabled per user request
     }
 
     ngOnDestroy(): void {
-        if (this.scrollInterval) clearInterval(this.scrollInterval);
         if (this.clockInterval) clearInterval(this.clockInterval);
     }
 
@@ -64,28 +63,7 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    startAutoScroll() {
-        if (!this.scrollContainer) return;
-
-        let container = this.scrollContainer.nativeElement;
-        let scrollPos = 0;
-
-        this.scrollInterval = setInterval(() => {
-            // Scroll down by 1 pixel slowly
-            scrollPos += 1;
-            container.scrollTop = scrollPos;
-
-            // If arrived at bottom, wait a bit then jump back to top
-            if (container.scrollTop + container.clientHeight >= container.scrollHeight - 2) {
-                clearInterval(this.scrollInterval);
-                setTimeout(() => {
-                    scrollPos = 0;
-                    container.scrollTop = 0;
-                    this.startAutoScroll();
-                }, 5000); // Wait 5 seconds at the bottom before resetting
-            }
-        }, 40); // 40ms = approx 25fps smooth scrolling
-    }
+    // Auto-scroll function removed
 
     exitTvMode() {
         this.authService.logout();
