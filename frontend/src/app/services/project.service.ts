@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface Task {
     id?: string;
@@ -48,7 +49,7 @@ export interface Activity {
     providedIn: 'root'
 })
 export class ProjectService {
-    private apiUrl = `http://${window.location.hostname}:3000/api`;
+    private apiUrl = environment.apiUrl;
     private projectsCache = new BehaviorSubject<Project[]>([]);
     public projects$ = this.projectsCache.asObservable();
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface User {
     _id?: string;
@@ -21,7 +22,7 @@ export interface User {
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = `http://${window.location.hostname}:3000/api`;
+    private apiUrl = environment.apiUrl;
     private usersCache = new BehaviorSubject<User[]>([]);
     public users$ = this.usersCache.asObservable();
     private currentUserCache = new BehaviorSubject<User | null>(null); // Added this line

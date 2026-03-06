@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, AfterViewInit, OnChanges, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 declare const Chart: any;
 
@@ -19,7 +20,7 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
     loading = true;
     error = '';
 
-    private apiUrl = `http://${window.location.hostname}:3000/api`;
+    private apiUrl = environment.apiUrl;
     private charts: any[] = [];
 
     constructor(private http: HttpClient) { }

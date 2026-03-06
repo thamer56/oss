@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Task } from './project.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AiService {
-    private backendUrl = `http://${window.location.hostname}:3000/api/ai/generate-tasks`;
+    private backendUrl = `${environment.apiUrl}/ai/generate-tasks`;
 
     constructor(private http: HttpClient) { }
 
@@ -16,6 +17,6 @@ export class AiService {
     }
 
     chat(message: string, context: any = {}): Observable<{ response: string }> {
-        return this.http.post<{ response: string }>(`http://${window.location.hostname}:3000/api/ai/chat`, { message, context });
+        return this.http.post<{ response: string }>(`${environment.apiUrl}/ai/chat`, { message, context });
     }
 }
