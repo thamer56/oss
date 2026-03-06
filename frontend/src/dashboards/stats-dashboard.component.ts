@@ -13,9 +13,28 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
     @Input() userRole: string = '';
     @Input() isTvMode: boolean = false;
 
-    @ViewChild('etatChart') etatChartRef!: ElementRef;
-    @ViewChild('budgetChart') budgetChartRef!: ElementRef;
-    @ViewChild('avancementChart') avancementChartRef!: ElementRef;
+    @ViewChild('etatChart') set etatChart(content: ElementRef) {
+        if (content) {
+            this.etatChartRef = content;
+            this.tryRenderCharts();
+        }
+    }
+    @ViewChild('budgetChart') set budgetChart(content: ElementRef) {
+        if (content) {
+            this.budgetChartRef = content;
+            this.tryRenderCharts();
+        }
+    }
+    @ViewChild('avancementChart') set avancementChart(content: ElementRef) {
+        if (content) {
+            this.avancementChartRef = content;
+            this.tryRenderCharts();
+        }
+    }
+
+    private etatChartRef?: ElementRef;
+    private budgetChartRef?: ElementRef;
+    private avancementChartRef?: ElementRef;
 
     stats: any = null;
     loading = true;
@@ -31,7 +50,7 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
     }
 
     ngAfterViewInit() {
-        if (this.stats) this.renderCharts();
+        this.tryRenderCharts();
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -51,11 +70,12 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
             next: (data) => {
                 this.stats = data;
                 this.loading = false;
-                setTimeout(() => this.renderCharts(), 100);
+                this.tryRenderCharts();
             },
             error: (err) => {
                 this.error = 'Erreur de chargement des statistiques';
                 this.loading = false;
+                console.error("Stats error:", err);
             }
         });
     }
@@ -76,9 +96,17 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
         this.charts = [];
     }
 
+    tryRenderCharts() {
+        if (!this.stats || this.loading) return;
+        if (!this.etatChartRef || !this.budgetChartRef || !this.avancementChartRef) return;
+
+        // Use a tiny timeout to ensure it doesn't run multiple times in the same tick
+        setTimeout(() => this.renderCharts(), 50);
+    }
+
     renderCharts() {
         this.destroyCharts();
-        if (!this.stats) return;
+        if (!this.stats || !this.etatChartRef || !this.budgetChartRef || !this.avancementChartRef) return;
 
         // --- Donut: Projets par état ---
         if (this.etatChartRef?.nativeElement) {
