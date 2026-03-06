@@ -15,6 +15,7 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     projects: Project[] = [];
     refreshInterval: any;
     user: any = null;
+    isFullscreen = false;
 
     get activities() {
         if (!this.user) return [];
@@ -67,6 +68,13 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.refreshInterval = setInterval(() => {
             this.loadData();
         }, 60000);
+
+        // Listen for fullscreen changes (e.g., when user presses Esc)
+        document.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
+    }
+
+    onFullscreenChange() {
+        this.isFullscreen = !!document.fullscreenElement;
     }
 
     loadData() {
@@ -82,6 +90,23 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         if (this.refreshInterval) clearInterval(this.refreshInterval);
+        document.removeEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
+    }
+
+    toggleFullscreen() {
+        if (!this.isFullscreen) {
+            document.documentElement.requestFullscreen().then(() => {
+                this.isFullscreen = true;
+            }).catch(err => {
+                console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().then(() => {
+                    this.isFullscreen = false;
+                }).catch(err => console.error(err));
+            }
+        }
     }
 
     exitTvMode() {

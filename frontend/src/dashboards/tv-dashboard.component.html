@@ -14,10 +14,18 @@
             </div>
         </div>
 
-        <button (click)="exitTvMode()"
-            class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors border border-transparent hover:border-red-100">
-            <span class="material-symbols-outlined text-lg">logout</span> Déconnexion
-        </button>
+        <div class="flex items-center gap-3">
+            <button (click)="toggleFullscreen()"
+                class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-800 rounded-xl transition-colors border border-transparent hover:border-slate-200">
+                <span class="material-symbols-outlined text-lg">{{ isFullscreen ? 'fullscreen_exit' : 'fullscreen'
+                    }}</span>
+                {{ isFullscreen ? 'Quitter Plein Écran' : 'Plein Écran' }}
+            </button>
+            <button (click)="exitTvMode()"
+                class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors border border-transparent hover:border-red-100">
+                <span class="material-symbols-outlined text-lg">logout</span> Déconnexion
+            </button>
+        </div>
     </header>
 
     <main class="flex-1 p-8 space-y-8">
