@@ -30,7 +30,7 @@
     </div>
 
     <!-- Content -->
-    <div *ngIf="!loading && stats">
+    <div [class.hidden]="loading || !stats">
 
         <!-- KPI Cards -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
