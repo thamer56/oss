@@ -79,11 +79,21 @@ exports.chat = async (req, res) => {
         try {
             const roleL = roleStr.toLowerCase();
             const isAdmin = ['se', 'directeur', 'superadmin'].includes(roleL);
+            
+            const querySelect = `
+                SELECT 
+                    p.nom_projet, p.acronyme, p.etat, p.budget_total, p.budget_depense, p.avancement, p.beneficiaires_pays, p.division_id,
+                    cp.nom AS nom_chef_projet,
+                    (SELECT nom FROM user_profiles WHERE role = 'chef_division' AND division_id = p.division_id LIMIT 1) AS nom_chef_division
+                FROM projects p
+                LEFT JOIN user_profiles cp ON p.chef_projet_id = cp.id_user OR p.chef_projet_id = cp.username
+            `;
+
             if (isAdmin || divisionStr === 'Toutes' || divisionStr === 'ALL') {
-                const { rows } = await pool.query('SELECT nom_projet, acronyme, etat, budget_total, budget_depense, avancement, chef_projet_id, division_id FROM projects LIMIT 50');
+                const { rows } = await pool.query(`${querySelect} LIMIT 50`);
                 projects = rows;
             } else if (divisionStr) {
-                const { rows } = await pool.query('SELECT nom_projet, acronyme, etat, budget_total, budget_depense, avancement, chef_projet_id, division_id FROM projects WHERE division_id = $1 LIMIT 50', [divisionStr]);
+                const { rows } = await pool.query(`${querySelect} WHERE p.division_id = $1 LIMIT 50`, [divisionStr]);
                 projects = rows;
             }
         } catch (dbErr) {
