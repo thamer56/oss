@@ -68,6 +68,13 @@
                     translate.t.directorTitle }}</h1>
             </div>
             <div class="flex items-center gap-3 md:gap-5">
+                <!-- TV Mode Button -->
+                <a routerLink="/tv-dashboard"
+                    class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-indigo-900 text-white rounded-lg hover:bg-indigo-800 transition-colors shadow-sm font-semibold text-xs tracking-wider">
+                    <span class="material-symbols-outlined text-[16px]">tv</span>
+                    <span>TV Display</span>
+                </a>
+
                 <!-- Notification Bell -->
                 <div class="relative">
                     <button (click)="showNotifPanel = !showNotifPanel"
