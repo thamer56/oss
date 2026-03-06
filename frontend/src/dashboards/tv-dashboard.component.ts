@@ -16,33 +16,7 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     user: any = null;
     isFullscreen = false;
 
-    get activities() {
-        if (!this.user) return [];
-        return this.notifService
-            .getNotificationsForUser(this.user.username, this.user.role, this.user.division_id)
-            .slice(0, 5)
-            .map(n => {
-                let color = 'blue';
-                let typeText = 'SYSTÈME';
-                if (n.type === 'success') { color = 'emerald'; typeText = 'PROJET'; }
-                else if (n.type === 'warning') { color = 'amber'; typeText = 'ALERTE'; }
-                else if (n.message.includes('Ajouté')) { color = 'blue'; typeText = 'ADMIN'; }
-
-                const diffMins = Math.floor((new Date().getTime() - new Date(n.createdAt).getTime()) / 60000);
-                const diffHrs = Math.floor(diffMins / 60);
-                const diffDays = Math.floor(diffHrs / 24);
-                let timeStr = "à l'instant";
-                if (diffDays > 0) timeStr = `il y a ${diffDays}j`;
-                else if (diffHrs > 0) timeStr = `il y a ${diffHrs}h`;
-                else if (diffMins > 0) timeStr = `il y a ${diffMins}m`;
-
-                return {
-                    icon: n.icon || 'info', color: color,
-                    title: n.projectName || 'Notification',
-                    time: timeStr, description: n.message, type: typeText
-                };
-            });
-    }
+    activities: any[] = [];
 
     constructor(
         private authService: AuthService,
@@ -63,8 +37,37 @@ export class TvDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.projects = projs;
         });
 
+        this.notifService.notifications$.subscribe(notifs => {
+            this.updateActivities(notifs);
+        });
+
         // Listen for fullscreen changes (e.g., when user presses Esc)
         document.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
+    }
+
+    updateActivities(notifs: any[]) {
+        if (!this.user) return;
+        this.activities = notifs.slice(0, 5).map(n => {
+            let color = 'blue';
+            let typeText = 'SYSTÈME';
+            if (n.type === 'success') { color = 'emerald'; typeText = 'PROJET'; }
+            else if (n.type === 'warning') { color = 'amber'; typeText = 'ALERTE'; }
+            else if (n.message.includes('Ajouté')) { color = 'blue'; typeText = 'ADMIN'; }
+
+            const diffMins = Math.floor((new Date().getTime() - new Date(n.createdAt).getTime()) / 60000);
+            const diffHrs = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHrs / 24);
+            let timeStr = "à l'instant";
+            if (diffDays > 0) timeStr = `il y a ${diffDays}j`;
+            else if (diffHrs > 0) timeStr = `il y a ${diffHrs}h`;
+            else if (diffMins > 0) timeStr = `il y a ${diffMins}m`;
+
+            return {
+                icon: n.icon || 'info', color: color,
+                title: n.projectName || 'Notification',
+                time: timeStr, description: n.message, type: typeText
+            };
+        });
     }
 
     onFullscreenChange() {
