@@ -31,12 +31,48 @@
     <main class="flex-1 p-8 space-y-8">
 
         <!-- Stats Dashboard -->
-        <app-stats-dashboard [divisionId]="null" [userRole]="'superadmin'"></app-stats-dashboard>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden pt-4 px-4 w-full">
+            <app-stats-dashboard [divisionId]="null" [userRole]="'superadmin'" [isTvMode]="true"></app-stats-dashboard>
+        </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
+        <div class="flex flex-col gap-8">
 
-            <!-- Main Column: Projects -->
-            <div class="xl:col-span-2 space-y-4">
+            <!-- Top Row: Activities -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-bold px-1 text-slate-800">Activités Récentes</h2>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+                        <div *ngFor="let act of activities; let last = last"
+                            class="flex flex-col items-start gap-2 p-5 hover:bg-slate-50 transition-colors">
+                            <div class="flex w-full items-center justify-between">
+                                <div class="w-8 h-8 flex-none rounded-full border flex items-center justify-center"
+                                    [ngClass]="{
+                                        'bg-blue-50 text-blue-600 border-blue-100': act.color === 'blue',
+                                        'bg-emerald-50 text-emerald-600 border-emerald-100': act.color === 'emerald',
+                                        'bg-amber-50 text-amber-600 border-amber-100': act.color === 'amber'
+                                    }">
+                                    <span class="material-symbols-outlined text-sm">{{ act.icon }}</span>
+                                </div>
+                                <span
+                                    class="text-[10px] font-medium text-slate-400 bg-slate-100 px-2 py-1 rounded-md">{{
+                                    act.time }}</span>
+                            </div>
+                            <div class="space-y-1 w-full mt-1">
+                                <p class="text-sm font-bold text-slate-800 line-clamp-1" [title]="act.title">{{
+                                    act.title }}</p>
+                                <p class="text-xs text-slate-600 line-clamp-2" [innerHTML]="act.description"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="activities.length === 0" class="p-6 text-center text-slate-400 text-sm">
+                        Aucune activité récente.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row: Projects -->
+            <div class="space-y-4">
                 <h2 class="text-xl font-bold px-1 text-slate-800">Liste des Projets ({{ projects.length }})</h2>
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="overflow-x-auto max-h-[600px] overflow-y-auto custom-scrollbar">
@@ -94,37 +130,6 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar Column: Activities -->
-            <div class="space-y-4">
-                <h2 class="text-xl font-bold px-1 text-slate-800">Activités Récentes</h2>
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    <div *ngFor="let act of activities; let last = last"
-                        class="flex flex-col md:flex-row items-start gap-4 p-5 border-slate-100 hover:bg-slate-50 transition-colors"
-                        [ngClass]="{'border-b': !last}">
-                        <div class="w-10 h-10 flex-none rounded-full border flex items-center justify-center mt-1"
-                            [ngClass]="{
-                                  'bg-blue-50 text-blue-600 border-blue-100': act.color === 'blue',
-                                  'bg-emerald-50 text-emerald-600 border-emerald-100': act.color === 'emerald',
-                                  'bg-amber-50 text-amber-600 border-amber-100': act.color === 'amber'
-                              }">
-                            <span class="material-symbols-outlined">{{ act.icon }}</span>
-                        </div>
-                        <div class="flex-1 space-y-1">
-                            <div class="flex justify-between items-start">
-                                <p class="text-sm font-bold text-slate-800 line-clamp-1">{{ act.title }}</p>
-                                <span
-                                    class="text-[10px] font-medium text-slate-400 bg-slate-100 px-2 py-1 rounded-md whitespace-nowrap">{{
-                                    act.time }}</span>
-                            </div>
-                            <p class="text-xs text-slate-600 line-clamp-3" [innerHTML]="act.description"></p>
-                        </div>
-                    </div>
-                    <div *ngIf="activities.length === 0" class="p-6 text-center text-slate-400 text-sm">
-                        Aucune activité récente.
                     </div>
                 </div>
             </div>

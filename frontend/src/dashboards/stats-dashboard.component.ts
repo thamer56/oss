@@ -11,6 +11,7 @@ declare const Chart: any;
 export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges {
     @Input() divisionId: string | null = null; // null = all data (admin/director)
     @Input() userRole: string = '';
+    @Input() isTvMode: boolean = false;
 
     @ViewChild('etatChart') etatChartRef!: ElementRef;
     @ViewChild('budgetChart') budgetChartRef!: ElementRef;
