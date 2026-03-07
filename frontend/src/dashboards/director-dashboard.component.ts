@@ -10,6 +10,7 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
     selector: 'app-director-dashboard',
     templateUrl: './director-dashboard.component.html',
+    styleUrls: ['./director-dashboard.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DirectorDashboardComponent implements OnInit, OnDestroy {

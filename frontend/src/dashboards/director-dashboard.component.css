@@ -1,0 +1,66 @@
+/* ── Director Dashboard — 3D Enhancements ── */
+
+/* Division performance cards — gradient top border + lift */
+.grid .bg-white.border.border-slate-200.p-5.rounded-xl {
+    border-top: 3px solid transparent !important;
+    border-image: linear-gradient(90deg, #4f46e5, #818cf8) 1 !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.grid .bg-white.border.border-slate-200.p-5.rounded-xl:hover {
+    transform: translateY(-4px) !important;
+    box-shadow:
+        0 8px 24px rgba(79, 70, 229, 0.12),
+        0 0 0 1px rgba(79, 70, 229, 0.06) !important;
+}
+
+/* Chiefs avatars — 3D depth */
+div[class*="rounded-full"][class*="border-4"][class*="shadow-md"] {
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.2),
+        0 0 0 3px rgba(255, 255, 255, 0.8) !important;
+    transition: transform 0.2s ease !important;
+}
+
+div[class*="rounded-full"][class*="border-4"][class*="shadow-md"]:hover {
+    transform: scale(1.08) translateY(-2px) !important;
+}
+
+/* Critical alert cards — 3D severity indicator */
+div[class*="flex"][class*="items-start"][class*="rounded-xl"][class*="bg-red"] {
+    border-left: 4px solid #dc2626 !important;
+    box-shadow: -4px 0 12px rgba(220, 38, 38, 0.15), 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+    transition: transform 0.2s ease !important;
+}
+
+div[class*="flex"][class*="items-start"][class*="rounded-xl"][class*="bg-amber"] {
+    border-left: 4px solid #f59e0b !important;
+    box-shadow: -4px 0 12px rgba(245, 158, 11, 0.15), 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+div[class*="flex"][class*="items-start"][class*="rounded-xl"]:hover {
+    transform: translateX(3px) !important;
+}
+
+/* Director dashboard header title */
+h1[class*="text-slate-8"] {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Q3 Stats badge — float */
+span[class*="bg-blue-5"][class*="rounded-full"] {
+    box-shadow: 0 3px 10px rgba(79, 70, 229, 0.25) !important;
+    animation: oss-float-badge 3s ease-in-out infinite !important;
+}
+
+@keyframes oss-float-badge {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-2px);
+    }
+}

@@ -42,6 +42,248 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+
+        /* ══════════════════════════════════════════════
+           OSS GLOBAL 3D DESIGN SYSTEM — Professional
+           ══════════════════════════════════════════════ */
+
+        /* ── Page background: subtle depth texture ── */
+        .bg-gray-50 {
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(0, 103, 177, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 100%, rgba(242, 178, 51, 0.03) 0%, transparent 60%),
+                #f1f5f9 !important;
+        }
+
+        /* ── Sidebar 3D depth ── */
+        aside.hidden.md\:flex {
+            background: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%) !important;
+            border-right: 1px solid rgba(0, 103, 177, 0.08) !important;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.06), 1px 0 0 rgba(0, 103, 177, 0.05) !important;
+        }
+
+        /* Sidebar nav links — 3D hover lift */
+        aside nav a,
+        aside nav button {
+            transition: all 0.2s cubic-bezier(.4, 0, .2, 1) !important;
+        }
+
+        aside nav a:hover {
+            transform: translateX(2px) !important;
+            box-shadow: 2px 2px 8px rgba(0, 103, 177, 0.08) !important;
+        }
+
+        /* ── Sticky header — frosted glass depth ── */
+        header.sticky {
+            background: rgba(255, 255, 255, 0.88) !important;
+            backdrop-filter: blur(16px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06), 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+        }
+
+        /* ── Cards — 3D raised effect ── */
+        .bg-white.rounded-2xl,
+        .bg-white.rounded-xl {
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.06),
+                0 4px 12px rgba(0, 0, 0, 0.05),
+                0 0 0 1px rgba(0, 0, 0, 0.03),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+            transition: box-shadow 0.25s ease, transform 0.25s ease !important;
+        }
+
+        /* Stat/KPI cards hover lift */
+        .bg-white.rounded-2xl:hover,
+        .bg-white.rounded-xl.hover\:shadow-md:hover {
+            box-shadow:
+                0 4px 6px rgba(0, 0, 0, 0.06),
+                0 12px 28px rgba(0, 0, 0, 0.09),
+                0 0 0 1px rgba(0, 103, 177, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* Dark card (slate-900) — keep original, just add subtle glow */
+        .bg-slate-900 {
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+        }
+
+        /* ── Buttons — 3D press effect ── */
+        button[class*="bg-blue-6"],
+        a[class*="bg-blue-6"] {
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        button[class*="bg-blue-6"]:hover,
+        a[class*="bg-blue-6"]:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+        }
+
+        button[class*="bg-blue-6"]:active,
+        a[class*="bg-blue-6"]:active {
+            transform: translateY(1px) !important;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+        }
+
+        /* Red delete buttons */
+        button[class*="bg-red"]:not([class*="hover"]) {
+            box-shadow: 0 3px 10px rgba(220, 38, 38, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+        }
+
+        /* ── Select & Input fields — inner shadow (engraved 3D) ── */
+        select,
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="date"],
+        textarea {
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            box-shadow:
+                inset 0 2px 4px rgba(0, 103, 177, 0.06),
+                0 0 0 3px rgba(0, 103, 177, 0.1) !important;
+            outline: none !important;
+        }
+
+        /* ── Table rows — subtle stripe + row lift on hover ── */
+        tbody tr {
+            transition: all 0.15s ease !important;
+        }
+
+        tbody tr:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+            transform: scale(1.002) !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+
+        /* ── Bottom mobile nav ── */
+        nav.md\:hidden.fixed {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(16px) !important;
+            box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.1), 0 -1px 0 rgba(0, 0, 0, 0.04) !important;
+        }
+
+        /* ── Status badges — pill 3D ── */
+        span[class*="inline-flex"][class*="rounded"] {
+            transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+        }
+
+        span[class*="inline-flex"][class*="rounded"]:hover {
+            transform: translateY(-1px) !important;
+        }
+
+        /* ── Logo badge in sidebar ── */
+        aside .rounded-xl[class*="bg-blue-6"] {
+            box-shadow:
+                0 4px 12px rgba(37, 99, 235, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 0 0 2px rgba(37, 99, 235, 0.1) !important;
+        }
+
+        /* ── Section headings — subtle underline accent ── */
+        h2[class*="font-bold"][class*="text-slate-8"]::after {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 3px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #0067B1, #F2B233);
+            margin-top: 6px;
+        }
+
+        /* ── Floating action button ── */
+        button[class*="bg-blue-6"][class*="rounded-lg"][class*="shadow-md"] {
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5) !important;
+            animation: oss-fab-float 3s ease-in-out infinite !important;
+        }
+
+        @keyframes oss-fab-float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        /* ── Tab navigation — active indicator 3D ── */
+        button[class*="border-blue-6"] {
+            position: relative !important;
+        }
+
+        button[class*="border-blue-6"]::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            border-radius: 2px 2px 0 0;
+            background: linear-gradient(90deg, #0067B1, #4da6e8);
+            box-shadow: 0 0 8px rgba(0, 103, 177, 0.4);
+        }
+
+        /* ── Modals & overlays — deeper shadow ── */
+        [class*="fixed"][class*="inset-0"][class*="bg-black"]+div,
+        .z-50[class*="bg-white"][class*="rounded"] {
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+        }
+
+        /* ── Notification panel ── */
+        [class*="absolute"][class*="right-0"][class*="mt-2"][class*="bg-white"][class*="rounded-2xl"] {
+            box-shadow:
+                0 16px 48px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(0, 0, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+        }
+
+        /* ── Progress bars — gradient instead of flat ── */
+        div[class*="h-1.5"][class*="rounded-full"]:not([class*="bg-slate"]):not([class*="bg-white"]) {
+            background-image: linear-gradient(90deg, currentColor, rgba(255, 255, 255, 0.3) 100%) !important;
+            filter: brightness(1.05) !important;
+        }
+
+        /* ── Scrollbar — custom thin scrollbar ── */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 103, 177, 0.2) transparent;
+        }
+
+        *::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: rgba(0, 103, 177, 0.2);
+            border-radius: 4px;
+        }
+
+        *::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 103, 177, 0.4);
+        }
     </style>
 </head>
 

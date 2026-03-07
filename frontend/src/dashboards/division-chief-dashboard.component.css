@@ -1,0 +1,43 @@
+/* ── Division Chief Dashboard — 3D Enhancements ── */
+
+/* Project cards — colored division accents */
+.bg-white.rounded-2xl.border.border-slate-200.overflow-hidden {
+    border-top: 3px solid transparent !important;
+    border-image: linear-gradient(90deg, #0067B1, #00a8e8) 1 !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.bg-white.rounded-2xl.border.border-slate-200.overflow-hidden:hover {
+    transform: translateY(-4px) !important;
+    box-shadow:
+        0 12px 30px rgba(0, 103, 177, 0.12),
+        0 0 0 1px rgba(0, 103, 177, 0.08) !important;
+}
+
+/* Progress bar containers — depth track */
+div[class*="bg-slate-1"][class*="rounded-full"][class*="h-2"] {
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Status badges — glow by status */
+span[class*="bg-blue-5"][class*="text-blue"][class*="border-blue"] {
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.25) !important;
+}
+
+span[class*="bg-emerald"][class*="text-emerald"][class*="border-emerald"] {
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.25) !important;
+}
+
+span[class*="bg-amber"][class*="text-amber"][class*="border-amber"] {
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.25) !important;
+}
+
+span[class*="bg-red"][class*="text-red"][class*="border-red"] {
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.25) !important;
+}
+
+/* Task items — hover depth */
+div[class*="flex"][class*="items-center"][class*="gap"] label {
+    cursor: pointer;
+    transition: color 0.15s;
+}

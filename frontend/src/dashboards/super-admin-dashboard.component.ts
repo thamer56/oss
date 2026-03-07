@@ -10,6 +10,7 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
     selector: 'app-super-admin-dashboard',
     templateUrl: './super-admin-dashboard.component.html',
+    styleUrls: ['./super-admin-dashboard.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SuperAdminDashboardComponent implements OnInit, OnDestroy {

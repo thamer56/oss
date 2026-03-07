@@ -1,0 +1,81 @@
+/* ── Super Admin Dashboard — 3D Enhancements ── */
+
+/* KPI cards: 3D tilt on hover using perspective */
+section .bg-white.rounded-2xl.group {
+    transform-style: preserve-3d;
+    perspective: 800px;
+}
+
+section .bg-white.rounded-2xl.group:hover {
+    transform: translateY(-3px) rotateX(1deg) !important;
+}
+
+/* "Active Divisions" dark card — shimmering border */
+.bg-slate-900.rounded-2xl {
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-slate-900.rounded-2xl::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(0, 103, 177, 0.5), rgba(242, 178, 51, 0.3), rgba(0, 103, 177, 0.5));
+    z-index: -1;
+    animation: shimmer-border 4s linear infinite;
+    background-size: 200% 200%;
+}
+
+@keyframes shimmer-border {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Division filter cards */
+div[class*="flex-none"][class*="w-72"] {
+    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+div[class*="flex-none"][class*="w-72"]:hover {
+    transform: translateY(-4px) scale(1.01) !important;
+}
+
+/* "Admin Mode" badge — gold glow */
+span[class*="bg-red-1"][class*="text-red-7"] {
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.3) !important;
+    animation: pulse-badge 2.5s ease-in-out infinite !important;
+}
+
+@keyframes pulse-badge {
+
+    0%,
+    100% {
+        box-shadow: 0 0 6px rgba(220, 38, 38, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 14px rgba(220, 38, 38, 0.5);
+    }
+}
+
+/* Projects table container — lift on scroll */
+#projects-pipeline .bg-white.rounded-2xl {
+    border-top: 3px solid transparent;
+    border-image: linear-gradient(90deg, #0067B1, #F2B233, #0067B1) 1;
+}
+
+/* Sidebar user info section */
+aside .p-6.border-b {
+    background: linear-gradient(135deg, #f0f7ff, #ffffff) !important;
+    border-bottom: 1px solid rgba(0, 103, 177, 0.1) !important;
+}

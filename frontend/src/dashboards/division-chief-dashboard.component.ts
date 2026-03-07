@@ -8,6 +8,7 @@ import { TranslationService } from '../app/services/translation.service';
 @Component({
     selector: 'app-division-chief-dashboard',
     templateUrl: './division-chief-dashboard.component.html',
+    styleUrls: ['./division-chief-dashboard.component.css'],
 })
 export class DivisionChiefDashboardComponent implements OnInit {
     user: User | null = null;

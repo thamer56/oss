@@ -1,0 +1,30 @@
+/* ── Project Manager Dashboard — 3D Enhancements ── */
+
+/* Task items — card lift */
+.bg-white.rounded-xl.border.border-slate-200 {
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.bg-white.rounded-xl.border.border-slate-200:hover {
+    transform: translateY(-2px) !important;
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(0, 103, 177, 0.06) !important;
+}
+
+/* Completed task — strikethrough animation */
+label.line-through {
+    opacity: 0.5;
+    transition: opacity 0.3s ease !important;
+}
+
+/* Checkbox — 3D press */
+input[type="checkbox"] {
+    cursor: pointer;
+    transform-origin: center;
+    transition: transform 0.15s ease !important;
+}
+
+input[type="checkbox"]:active {
+    transform: scale(0.85) !important;
+}
