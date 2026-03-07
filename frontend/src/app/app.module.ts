@@ -24,6 +24,7 @@ import { EquipeComponent } from '../dashboards/equipe.component';
 import { ChatbotComponent } from '../dashboards/chatbot.component';
 import { StatsDashboardComponent } from '../dashboards/stats-dashboard.component';
 import { BudgetComponent } from '../dashboards/budget.component';
+import { TvDisplayComponent } from '../dashboards/tv-display.component';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { PmTasksComponent } from './dashboards/pm-tasks/pm-tasks.component';
 import { PmCalendarComponent } from './dashboards/pm-calendar/pm-calendar.component';
@@ -49,6 +50,7 @@ import { PmCalendarComponent } from './dashboards/pm-calendar/pm-calendar.compon
     SafeUrlPipe,
     PmTasksComponent,
     PmCalendarComponent,
+    TvDisplayComponent,
   ],
   imports: [
     BrowserModule,

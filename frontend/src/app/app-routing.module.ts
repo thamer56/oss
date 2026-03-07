@@ -12,6 +12,7 @@ import { ProjectDetailComponent } from '../dashboards/project-detail.component';
 import { ProjectCreateComponent } from '../dashboards/project-create.component';
 import { EquipeComponent } from '../dashboards/equipe.component';
 import { BudgetComponent } from '../dashboards/budget.component';
+import { TvDisplayComponent } from '../dashboards/tv-display.component';
 import { PmTasksComponent } from './dashboards/pm-tasks/pm-tasks.component';
 import { PmCalendarComponent } from './dashboards/pm-calendar/pm-calendar.component';
 
@@ -37,6 +38,7 @@ const routes: Routes = [
   { path: 'budget', component: BudgetComponent },
   { path: 'pm-tasks', component: PmTasksComponent },
   { path: 'pm-calendar', component: PmCalendarComponent },
+  { path: 'tv-display', component: TvDisplayComponent },
 
   // Fallback
   { path: '**', redirectTo: 'login' },

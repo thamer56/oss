@@ -78,6 +78,15 @@
             </div>
             <div class="flex items-center gap-3">
                 <!-- Language Toggle Removed -->
+
+                <!-- [TEST] Bouton Mode TV — À SUPPRIMER APRÈS TEST -->
+                <a routerLink="/tv-display"
+                    class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-amber-700 bg-amber-50 border border-dashed border-amber-400 text-xs font-bold hover:bg-amber-100 transition-all"
+                    title="Mode TV Display (test — à supprimer)">
+                    <span class="material-symbols-outlined text-base">tv</span>
+                    Mode TV
+                </a>
+
                 <button (click)="openAddProject()"
                     class="hidden md:flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">add</span>

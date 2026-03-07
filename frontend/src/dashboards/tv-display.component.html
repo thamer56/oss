@@ -1,0 +1,242 @@
+<div class="tv-page">
+
+    <!-- ═══ TOP BAR ═══ -->
+    <header class="tv-header">
+        <div class="tv-header-left">
+            <div class="tv-logo-wrap">
+                <img src="assets/oss-logo.jpg" alt="OSS" class="tv-logo-img"
+                    onerror="this.style.display='none';document.getElementById('tv-logo-fb').style.display='flex';" />
+                <div id="tv-logo-fb" class="tv-logo-fb">OSS</div>
+            </div>
+            <div class="tv-header-title">
+                <span class="tv-org">Observatoire du Sahara et du Sahel</span>
+                <span class="tv-role">{{ roleLabel }}</span>
+            </div>
+        </div>
+
+        <div class="tv-header-center">
+            <div class="tv-clock">{{ currentTime | date:'HH:mm:ss' }}</div>
+            <div class="tv-date">{{ currentTime | date:'EEEE dd MMMM yyyy':'':'fr' }}</div>
+        </div>
+
+        <div class="tv-header-right">
+            <!-- [TEST] Bouton retour dashboard — À SUPPRIMER APRÈS TEST -->
+            <a [routerLink]="user?.role === 'se' ? '/super-admin' : user?.role === 'directeur' ? '/director' : '/division-chief'"
+                class="tv-btn tv-btn-test" title="Retour Dashboard (test uniquement)">
+                <span class="material-symbols-outlined">arrow_back</span>
+                <span>Dashboard</span>
+            </a>
+
+            <button class="tv-btn tv-btn-fs" (click)="toggleFullscreen()"
+                [title]="isFullscreen ? 'Quitter le plein écran' : 'Plein écran (F11)'">
+                <span class="material-symbols-outlined">{{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}</span>
+            </button>
+
+            <button class="tv-btn tv-btn-logout" (click)="logout()">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ═══ KPI STRIP ═══ -->
+    <section class="tv-kpi-strip" *ngIf="stats && !loadingStats">
+        <div class="tv-kpi-card">
+            <span class="material-symbols-outlined tv-kpi-icon" style="color:#0067B1">folder_open</span>
+            <div>
+                <p class="tv-kpi-val">{{ stats.total }}</p>
+                <p class="tv-kpi-label">Total Projets</p>
+            </div>
+        </div>
+        <div class="tv-kpi-card">
+            <span class="material-symbols-outlined tv-kpi-icon" style="color:#10b981">payments</span>
+            <div>
+                <p class="tv-kpi-val">{{ formatBudget(stats.budgetTotal) }}</p>
+                <p class="tv-kpi-label">Budget Global</p>
+            </div>
+        </div>
+        <div class="tv-kpi-card">
+            <span class="material-symbols-outlined tv-kpi-icon" style="color:#f59e0b">account_balance_wallet</span>
+            <div>
+                <p class="tv-kpi-val">{{ formatBudget(stats.budgetDepense) }}</p>
+                <p class="tv-kpi-label">Budget Dépensé</p>
+            </div>
+        </div>
+        <div class="tv-kpi-card">
+            <span class="material-symbols-outlined tv-kpi-icon" style="color:#6366f1">trending_up</span>
+            <div>
+                <p class="tv-kpi-val">{{ stats.avancementMoyen }}%</p>
+                <p class="tv-kpi-label">Avancement Moyen</p>
+            </div>
+        </div>
+        <!-- Division stats -->
+        <div class="tv-kpi-card tv-kpi-div" *ngFor="let div of ['D01','D02','D03','D04']">
+            <span class="tv-div-dot"
+                [style.background]="div==='D01'?'#10b981':div==='D02'?'#06b6d4':div==='D03'?'#f59e0b':'#3b82f6'"></span>
+            <div>
+                <p class="tv-kpi-val tv-kpi-sm">{{ divisionStats[div]?.count || 0 }}</p>
+                <p class="tv-kpi-label">{{ div }}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ MAIN CONTENT ═══ -->
+    <div class="tv-main">
+
+        <!-- LEFT: Projects table -->
+        <section class="tv-projects-panel">
+            <div class="tv-panel-header">
+                <span class="material-symbols-outlined tv-panel-icon" style="color:#0067B1">grid_view</span>
+                <h2>Pipeline des Projets</h2>
+                <span class="tv-badge">{{ projectsToShow.length }} projets</span>
+            </div>
+
+            <div class="tv-table-wrap">
+                <table class="tv-table">
+                    <thead>
+                        <tr>
+                            <th>Projet</th>
+                            <th>Division</th>
+                            <th>Statut</th>
+                            <th>Budget Total</th>
+                            <th>Budget Avancement</th>
+                            <th>Avancement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let p of projectsToShow" [class]="getStatusClass(p.etat)">
+                            <td>
+                                <div class="tv-proj-name">{{ p.nom_projet }}</div>
+                                <div class="tv-proj-acronym">{{ p.acronyme }}</div>
+                            </td>
+                            <td>
+                                <span class="tv-div-badge">{{ p.division_id }}</span>
+                            </td>
+                            <td>
+                                <span class="tv-status" [class]="getStatusClass(p.etat)">
+                                    <span class="tv-status-dot"></span>
+                                    {{ p.etat }}
+                                </span>
+                            </td>
+                            <td class="tv-num">{{ formatBudget(p.budget_total || 0) }}</td>
+                            <td>
+                                <div class="tv-progress-bar">
+                                    <div class="tv-progress-fill" [style.width]="getBudgetPct(p) + '%'"
+                                        [style.background]="getBudgetPct(p) > 80 ? '#ef4444' : getBudgetPct(p) > 60 ? '#f59e0b' : '#10b981'">
+                                    </div>
+                                    <span class="tv-progress-label">{{ getBudgetPct(p) }}%</span>
+                                </div>
+                            </td>
+                            <td class="tv-num">{{ p.avancement || '—' }}</td>
+                        </tr>
+                        <tr *ngIf="projectsToShow.length === 0">
+                            <td colspan="6" style="text-align:center;padding:32px;color:#94a3b8;">Aucun projet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- RIGHT: Stats panels -->
+        <aside class="tv-stats-panel">
+
+            <!-- By status -->
+            <div class="tv-stat-block" *ngIf="stats">
+                <div class="tv-panel-header">
+                    <span class="material-symbols-outlined tv-panel-icon" style="color:#6366f1">donut_large</span>
+                    <h3>Répartition par Statut</h3>
+                </div>
+                <div class="tv-status-list">
+                    <div class="tv-status-row" *ngFor="let item of stats.parEtat | keyvalue">
+                        <div class="tv-status-bar-wrap">
+                            <div class="tv-status-label-row">
+                                <span class="tv-sl">{{ item.key }}</span>
+                                <span class="tv-sv">{{ item.value }}</span>
+                            </div>
+                            <div class="tv-status-track">
+                                <div class="tv-status-fill" [style.width]="((+item.value / stats.total) * 100) + '%'"
+                                    [style.background]="item.key==='En Cours'?'#3b82f6':item.key==='Clôturé'?'#10b981':item.key==='En Retard'?'#f59e0b':'#ef4444'">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- By division -->
+            <div class="tv-stat-block">
+                <div class="tv-panel-header">
+                    <span class="material-symbols-outlined tv-panel-icon" style="color:#10b981">public</span>
+                    <h3>Budget par Division</h3>
+                </div>
+                <div class="tv-div-list">
+                    <div class="tv-div-row" *ngFor="let div of ['D01','D02','D03','D04']">
+                        <div class="tv-div-info">
+                            <span class="tv-div-dot"
+                                [style.background]="div==='D01'?'#10b981':div==='D02'?'#06b6d4':div==='D03'?'#f59e0b':'#3b82f6'">
+                            </span>
+                            <span class="tv-div-name">{{ div }}</span>
+                        </div>
+                        <div class="tv-div-stats">
+                            <span>{{ divisionStats[div]?.count || 0 }} proj.</span>
+                            <span class="tv-div-budget">{{ formatBudget(divisionStats[div]?.totalBudget || 0) }}</span>
+                        </div>
+                        <div class="tv-div-bar-wrap">
+                            <div class="tv-div-bar-track">
+                                <div class="tv-div-bar-fill"
+                                    [style.width]="(divisionStats[div]?.avgProgress || 0) + '%'"
+                                    [style.background]="div==='D01'?'#10b981':div==='D02'?'#06b6d4':div==='D03'?'#f59e0b':'#3b82f6'">
+                                </div>
+                            </div>
+                            <span class="tv-div-pct">{{ divisionStats[div]?.avgProgress || 0 }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk alerts -->
+            <div class="tv-stat-block tv-risk-block">
+                <div class="tv-panel-header">
+                    <span class="material-symbols-outlined tv-panel-icon" style="color:#ef4444">warning</span>
+                    <h3>Alertes Critiques</h3>
+                </div>
+                <div class="tv-alerts">
+                    <div *ngFor="let p of projectsToShow | slice:0:5"
+                        [ngClass]="{'tv-alert-item': true, 'tv-alert-risk': p.etat==='A Risque', 'tv-alert-late': p.etat==='En Retard'}"
+                        *ngIf="p.etat === 'A Risque' || p.etat === 'En Retard'">
+                        <span class="material-symbols-outlined">{{ p.etat === 'A Risque' ? 'emergency' : 'schedule'
+                            }}</span>
+                        <div>
+                            <p class="tv-alert-name">{{ p.nom_projet }}</p>
+                            <p class="tv-alert-div">{{ p.division_id }} — {{ p.etat }}</p>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="(projectsToShow | slice:0:20) as allProjs">
+                        <p *ngIf="allProjs.length > 0 && (allProjs | slice:0:20)?.every ? true : false"
+                            class="tv-no-alerts" style="color:#10b981;font-size:12px;padding:8px 0;">
+                        </p>
+                    </ng-container>
+                    <p *ngIf="!projectsToShow.some(p => p.etat === 'A Risque' || p.etat === 'En Retard')"
+                        class="tv-no-alerts">
+                        <span class="material-symbols-outlined" style="color:#10b981">check_circle</span>
+                        Aucune alerte critique
+                    </p>
+                </div>
+            </div>
+
+        </aside>
+    </div>
+
+    <!-- ═══ FOOTER TICKER ═══ -->
+    <footer class="tv-footer">
+        <div class="tv-ticker">
+            <span class="tv-ticker-label">LIVE</span>
+            <span class="tv-ticker-text">
+                OSS — Portail de Gestion de Projets &nbsp;|&nbsp;
+                {{ currentTime | date:'dd/MM/yyyy HH:mm' }} &nbsp;|&nbsp;
+                {{ projectsToShow.length }} projets actifs &nbsp;|&nbsp;
+                <ng-container *ngIf="stats">Budget total : {{ formatBudget(stats.budgetTotal) }}</ng-container>
+            </span>
+        </div>
+    </footer>
+</div>

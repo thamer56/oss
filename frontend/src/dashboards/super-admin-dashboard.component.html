@@ -78,7 +78,16 @@
             </div>
             <div class="flex items-center gap-2 md:gap-4">
 
+                <!-- [TEST] Bouton Mode TV — À SUPPRIMER APRÈS TEST -->
+                <a routerLink="/tv-display"
+                    class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-amber-700 bg-amber-50 border border-dashed border-amber-400 text-xs font-bold hover:bg-amber-100 transition-all"
+                    title="Mode TV Display (test — à supprimer)">
+                    <span class="material-symbols-outlined text-base">tv</span>
+                    Mode TV
+                </a>
+
                 <!-- Notification Bell with Panel -->
+
                 <div class="relative">
                     <button (click)="showNotifPanel = !showNotifPanel"
                         class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
