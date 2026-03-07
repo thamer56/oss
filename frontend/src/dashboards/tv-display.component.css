@@ -117,22 +117,12 @@
     text-align: center;
 }
 
-.tv-clock {
-    font-size: 28px;
-    font-weight: 800;
+.tv-brand-text {
+    font-size: 13px;
+    font-weight: 700;
     color: #0067B1;
-    letter-spacing: 0.05em;
-    line-height: 1;
-    text-shadow: 0 2px 8px rgba(0, 103, 177, 0.15);
-    font-variant-numeric: tabular-nums;
-}
-
-.tv-date {
-    font-size: 11px;
-    color: #64748b;
-    font-weight: 600;
-    margin-top: 2px;
-    text-transform: capitalize;
+    letter-spacing: 0.04em;
+    opacity: 0.85;
 }
 
 /* Header buttons */
@@ -711,13 +701,30 @@
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.tv-ticker {
+.tv-ticker-wrap {
     display: flex;
     align-items: center;
+    width: 100%;
+    overflow: hidden;
+    height: 100%;
     gap: 0;
+}
+
+.tv-ticker {
+    flex: 1;
+    overflow: hidden;
     white-space: nowrap;
-    animation: tv-scroll 40s linear infinite;
+}
+
+.tv-ticker-text {
+    display: inline-block;
+    white-space: nowrap;
     color: white;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.9;
+    letter-spacing: 0.03em;
+    animation: tv-scroll 40s linear infinite;
 }
 
 .tv-ticker-label {

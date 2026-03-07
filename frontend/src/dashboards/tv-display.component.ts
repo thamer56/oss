@@ -21,11 +21,9 @@ export class TvDisplayComponent implements OnInit, OnDestroy {
     stats: any = null;
     divisionStats: any = {};
     isFullscreen = false;
-    currentTime = new Date();
     loadingStats = true;
 
     private destroy$ = new Subject<void>();
-    private clockInterval: any;
     private apiUrl = environment.apiUrl;
 
     get roleLabel(): string {
@@ -53,6 +51,10 @@ export class TvDisplayComponent implements OnInit, OnDestroy {
         return this.projects;
     }
 
+    get hasAlerts(): boolean {
+        return this.projectsToShow.some(p => p.etat === 'A Risque' || p.etat === 'En Retard');
+    }
+
     constructor(
         private authService: AuthService,
         private router: Router,
@@ -64,12 +66,6 @@ export class TvDisplayComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.user = this.authService.getCurrentUser();
         if (!this.user) { this.router.navigate(['/login']); return; }
-
-        // Live clock
-        this.clockInterval = setInterval(() => {
-            this.currentTime = new Date();
-            this.cdr.detectChanges();
-        }, 1000);
 
         // Subscribe to projects
         this.projectService.projects$
@@ -98,7 +94,6 @@ export class TvDisplayComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        clearInterval(this.clockInterval);
         this.destroy$.next();
         this.destroy$.complete();
         document.removeEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
