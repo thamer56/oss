@@ -8,55 +8,59 @@
     <!-- ══ THE BOT CHARACTER (always visible, closed state) ══ -->
     <div class="bot-scene" #botEl [class.bot-jumping]="isJumping" (click)="toggleChat()" *ngIf="!isOpen || isJumping">
 
-        <!-- Wave arm (appears on logout hover) -->
+        <!-- Wave arm (appears on logout hover OR welcome) -->
         <div class="bot-arm-wrap" [class.waving]="isWaving">
             <div class="bot-arm"></div>
             <div class="bot-hand">👋</div>
         </div>
 
-        <!-- 3D body wrapper (perspective) -->
-        <div class="bot-body-3d">
+        <!-- PERSPECTIVE WRAPPER (never transform-style on same element as perspective) -->
+        <div class="bot-3d-perspective">
 
-            <!-- Head (tracks cursor & scroll) -->
-            <div class="bot-head" [style.transform]="headTransform">
-                <!-- Antenna -->
-                <div class="bot-antenna-stem"></div>
-                <div class="bot-antenna-ball"></div>
+            <!-- 3D body (rotates as a whole toward cursor + scroll) -->
+            <div class="bot-body-3d" [style.transform]="botBodyTransform">
 
-                <!-- Face -->
-                <div class="bot-face">
-                    <div class="bot-eye-pair">
-                        <div class="bot-eye">
-                            <div class="bot-pupil" [style.transform]="pupilTransform"></div>
-                            <div class="bot-pupil-shine"></div>
+                <!-- HEAD -->
+                <div class="bot-head">
+                    <!-- Antenna -->
+                    <div class="bot-antenna-stem"></div>
+                    <div class="bot-antenna-ball"></div>
+
+                    <!-- Face -->
+                    <div class="bot-face">
+                        <div class="bot-eye-pair">
+                            <div class="bot-eye">
+                                <div class="bot-pupil" [style.transform]="pupilTransform"></div>
+                                <div class="bot-pupil-shine"></div>
+                            </div>
+                            <div class="bot-eye">
+                                <div class="bot-pupil" [style.transform]="pupilTransform"></div>
+                                <div class="bot-pupil-shine"></div>
+                            </div>
                         </div>
-                        <div class="bot-eye">
-                            <div class="bot-pupil" [style.transform]="pupilTransform"></div>
-                            <div class="bot-pupil-shine"></div>
-                        </div>
+                        <div class="bot-mouth happy"></div>
                     </div>
-                    <div class="bot-mouth" [class.happy]="!isWaiting"></div>
                 </div>
-            </div>
 
-            <!-- Torso -->
-            <div class="bot-torso">
-                <div class="bot-torso-screen">
-                    <div class="bot-led" style="background:#10b981;"></div>
-                    <span class="bot-oss-text">OSS</span>
-                    <div class="bot-led" style="background:#f59e0b;"></div>
+                <!-- Torso -->
+                <div class="bot-torso">
+                    <div class="bot-torso-screen">
+                        <div class="bot-led" style="background:#10b981;"></div>
+                        <span class="bot-oss-text">OSS</span>
+                        <div class="bot-led" style="background:#f59e0b;"></div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Feet -->
-            <div class="bot-feet">
-                <div class="bot-foot"></div>
-                <div class="bot-foot"></div>
-            </div>
+                <!-- Feet -->
+                <div class="bot-feet">
+                    <div class="bot-foot"></div>
+                    <div class="bot-foot"></div>
+                </div>
 
-        </div><!-- /bot-body-3d -->
+            </div><!-- /bot-body-3d -->
+        </div><!-- /bot-3d-perspective -->
 
-        <!-- Tooltip -->
+        <!-- Tooltip (left side) -->
         <div class="bot-tooltip">Assistant IA</div>
         <!-- Shadow -->
         <div class="bot-shadow"></div>

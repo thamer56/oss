@@ -91,13 +91,14 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         const dy = e.clientY - cy;
         const dist = Math.max(80, Math.sqrt(dx * dx + dy * dy));
 
-        // No pupil movement — head rotates instead
-        this.eyeX = 0;
-        this.eyeY = 0;
+        // WHOLE BOT rotates 3D toward cursor: ±30deg horizontal
+        this.headRotY = Math.max(-30, Math.min(30, (dx / dist) * 30));
 
-        // HEAD rotates toward cursor: ±28deg horizontal, ±18deg vertical
-        this.headRotY = Math.max(-28, Math.min(28, (dx / dist) * 28));
-        this.headRotX = this.headRotX; // keep scroll value; don't override
+        // Pupils ALSO track cursor within eyes: ±5px
+        this.eyeX = Math.max(-5, Math.min(5, (dx / dist) * 5));
+        this.eyeY = Math.max(-4, Math.min(4, (dy / dist) * 4));
+
+        // headRotX stays from scroll — don't override here
 
         // Detect hovering over logout button
         const target = e.target as HTMLElement;
@@ -204,7 +205,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         return html;
     }
 
-    get headTransform(): string {
+    get botBodyTransform(): string {
         return `rotateX(${this.headRotX}deg) rotateY(${this.headRotY}deg)`;
     }
 

@@ -109,15 +109,26 @@
     }
 }
 
-/* ── 3D PERSPECTIVE WRAPPER ──────────────────────────────────────── */
+/* ── PERSPECTIVE WRAPPER (holds the perspective property) ────── */
+.bot-3d-perspective {
+    perspective: 200px;
+    /* small = dramatic 3D effect */
+    perspective-origin: 50% 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ── 3D BODY (receives 3D rotation — never has perspective here) ─ */
 .bot-body-3d {
-    perspective: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0;
+    transform-style: preserve-3d;
+    /* allows children to be in 3D space */
+    transition: transform 0.1s ease;
     filter: drop-shadow(0 12px 20px rgba(0, 103, 177, 0.3));
-    transition: filter 0.2s;
 }
 
 /* ── ANTENNA ─────────────────────────────────────────────────────── */
