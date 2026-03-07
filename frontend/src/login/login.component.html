@@ -1,92 +1,106 @@
-<div
-  class="font-sans antialiased h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+<div class="scene" style="position:fixed;inset:0;overflow:hidden;font-family:'Inter',sans-serif;">
 
-  <!-- Background: Split + Map -->
-  <div class="absolute inset-0 split-bg"></div>
-  <div class="absolute inset-0 flex items-center justify-center map-overlay overflow-hidden pointer-events-none">
-    <img alt="Sahara and Sahel map" class="w-full h-full object-cover opacity-30"
-      src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8zmJ9kSI8974W-jkSDUIS71g2PLxBJOM50AWQaltvLt_DVVCjA0uUvcH22tvTaJwIIXx5SEtTGIR0CNQ8mER9G5ewhoiVICNH6KdHpYtpoWmxRK2zqA9Nt27RJblmr4C4nywyAiYB7BROABpQEU8ay0IZFL9gXQk490pvoQVBiNg61ZOd1UbBnZtVkMtAvr6a1N__xfF-4eobIfcS-qg21NEiJLgg6yg5w_-K21qlRBwbH3aqhNrKziYOO3lkRi9CB-eUp09Tugo6" />
+  <!-- Ambient orbs -->
+  <div class="orb-accent"></div>
+  <div class="orb-accent-2"></div>
+
+  <!-- Grid perspective depth -->
+  <div class="grid-lines"></div>
+
+  <!-- Floating particles -->
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+
+  <!-- Language switcher -->
+  <div class="lang-switcher">
+    <button class="lang-btn" [class.active]="currentLang==='fr'" (click)="setLang('fr')">FR</button>
+    <button class="lang-btn" [class.active]="currentLang==='en'" (click)="setLang('en')">EN</button>
   </div>
 
-  <!-- Card Container — fixed max height so it never exceeds screen -->
-  <div class="relative z-10 w-full max-w-sm mx-auto flex flex-col items-center px-4">
+  <!-- Main centered content -->
+  <div
+    style="position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;">
 
-    <!-- Logo + Title -->
-    <div class="flex flex-col items-center mb-4">
-      <div class="bg-white p-3 rounded-2xl shadow-lg mb-3">
-        <img alt="OSS Logo" class="h-14 w-auto" src="assets/oss-logo.jpg"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-        <div class="hidden h-14 w-14 items-center justify-center rounded-xl bg-blue-600">
-          <span class="text-white font-bold text-2xl">OSS</span>
+    <!-- 3D Card wrapper -->
+    <div class="card-3d-wrapper">
+      <div class="card-3d">
+
+        <!-- Logo & Title -->
+        <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
+          <div class="logo-badge">
+            <img alt="OSS Logo" style="height:48px;width:auto;border-radius:12px;" src="assets/oss-logo.jpg"
+              onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex';" />
+            <div id="logo-fallback"
+              style="display:none;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#0067B1,#0052a3);">
+              <span style="color:#fff;font-weight:900;font-size:16px;letter-spacing:-1px;">OSS</span>
+            </div>
+          </div>
+
+          <div class="oss-stripe">
+            <span></span>
+            Sahara &amp; Sahel Observatory
+          </div>
+
+          <h1 class="title-text">{{ t.welcome }}</h1>
+          <p class="subtitle-text">{{ t.signInDesc }}</p>
         </div>
+
+        <!-- Error message -->
+        <div *ngIf="errorMessage" class="error-3d">
+          <span class="material-symbols-outlined" style="font-size:18px;flex-shrink:0;">error</span>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <!-- Form -->
+        <form (ngSubmit)="onSubmit()">
+
+          <!-- Email / Username -->
+          <div class="input-3d">
+            <label for="username">{{ t.usernameLabel }}</label>
+            <div class="input-inner">
+              <span class="icon-left material-symbols-outlined">person</span>
+              <input id="username" name="username" type="email" autocomplete="email" autocorrect="off"
+                autocapitalize="none" spellcheck="false" [placeholder]="t.usernamePlaceholder" [(ngModel)]="username"
+                required />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="input-3d">
+            <label for="password">{{ t.passwordLabel }}</label>
+            <div class="input-inner">
+              <span class="icon-left material-symbols-outlined">lock</span>
+              <input id="password" name="password" [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
+                [(ngModel)]="password" required style="padding-right:42px;" />
+              <span class="icon-right material-symbols-outlined" (click)="togglePasswordVisibility()">
+                {{ showPassword ? 'visibility' : 'visibility_off' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <button class="btn-3d" type="submit">
+            {{ t.signInBtn }}
+          </button>
+
+        </form>
+
       </div>
-      <h1 class="text-white text-xl font-bold tracking-tight text-center">OSS</h1>
-      <p class="text-white/80 text-[10px] uppercase tracking-[0.15em] font-semibold text-center">
-        Sahara and Sahel Observatory
-      </p>
     </div>
 
-    <!-- Login Card -->
-    <div class="w-full bg-white rounded-2xl p-6 shadow-2xl border border-white/20">
+    <!-- Bottom label -->
+    <p
+      style="margin-top:20px;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;">
+      © 2025 OSS · Secured Portal
+    </p>
 
-      <div class="mb-5">
-        <h2 class="text-xl font-bold text-gray-900">{{ t.welcome }}</h2>
-        <p class="text-gray-500 text-sm mt-0.5">{{ t.signInDesc }}</p>
-      </div>
-
-      <!-- Error -->
-      <div *ngIf="errorMessage"
-        class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm">
-        <span class="material-symbols-outlined text-[18px]">error</span>
-        <span>{{ errorMessage }}</span>
-      </div>
-
-      <form class="space-y-4" (ngSubmit)="onSubmit()">
-        <!-- Email -->
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1" for="username">{{ t.usernameLabel
-            }}</label>
-          <div class="relative group">
-            <span
-              class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 group-focus-within:text-[#0067B1] transition-colors">
-              <span class="material-symbols-outlined text-[18px]">person</span>
-            </span>
-            <input
-              class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:ring-2 focus:ring-[#0067B1] focus:border-transparent transition-all placeholder:text-gray-400 text-sm"
-              id="username" name="username" [placeholder]="t.usernamePlaceholder" type="email" autocomplete="email"
-              autocorrect="off" autocapitalize="none" spellcheck="false" [(ngModel)]="username" required />
-          </div>
-        </div>
-
-        <!-- Password -->
-        <div>
-          <div class="flex justify-between items-center mb-1.5 ml-1">
-            <label class="block text-sm font-semibold text-gray-700" for="password">{{ t.passwordLabel }}</label>
-          </div>
-          <div class="relative group">
-            <span
-              class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 group-focus-within:text-[#0067B1] transition-colors">
-              <span class="material-symbols-outlined text-[18px]">lock</span>
-            </span>
-            <input
-              class="block w-full px-10 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:ring-2 focus:ring-[#0067B1] focus:border-transparent transition-all placeholder:text-gray-400 tracking-widest text-sm"
-              id="password" name="password" placeholder="••••••••" [type]="showPassword ? 'text' : 'password'"
-              [(ngModel)]="password" required />
-            <span (click)="togglePasswordVisibility()"
-              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer hover:text-gray-600 transition-colors">
-              <span class="material-symbols-outlined text-[18px]">{{ showPassword ? 'visibility' : 'visibility_off'
-                }}</span>
-            </span>
-          </div>
-        </div>
-
-        <button
-          class="w-full bg-[#0067B1] hover:bg-[#00528D] text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-[#0067B1]/30 transition-all transform active:scale-[0.98] text-sm"
-          type="submit">
-          {{ t.signInBtn }}
-        </button>
-      </form>
-    </div>
   </div>
-
 </div>

@@ -31,9 +31,7 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
     }
 
     ngAfterViewInit() {
-        if (this.stats && !this.loading) {
-            this.renderCharts();
-        }
+        if (this.stats) this.renderCharts();
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -53,12 +51,11 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
             next: (data) => {
                 this.stats = data;
                 this.loading = false;
-                setTimeout(() => this.renderCharts(), 150);
+                setTimeout(() => this.renderCharts(), 100);
             },
             error: (err) => {
                 this.error = 'Erreur de chargement des statistiques';
                 this.loading = false;
-                console.error("Stats error:", err);
             }
         });
     }
@@ -79,11 +76,9 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
         this.charts = [];
     }
 
-
-
     renderCharts() {
         this.destroyCharts();
-        if (!this.stats || !this.etatChartRef || !this.budgetChartRef || !this.avancementChartRef) return;
+        if (!this.stats) return;
 
         // --- Donut: Projets par état ---
         if (this.etatChartRef?.nativeElement) {

@@ -27,7 +27,6 @@ import { BudgetComponent } from '../dashboards/budget.component';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { PmTasksComponent } from './dashboards/pm-tasks/pm-tasks.component';
 import { PmCalendarComponent } from './dashboards/pm-calendar/pm-calendar.component';
-import { TvDashboardComponent } from '../dashboards/tv-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +49,6 @@ import { TvDashboardComponent } from '../dashboards/tv-dashboard.component';
     SafeUrlPipe,
     PmTasksComponent,
     PmCalendarComponent,
-    TvDashboardComponent,
   ],
   imports: [
     BrowserModule,
