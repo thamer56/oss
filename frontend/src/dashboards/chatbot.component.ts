@@ -56,12 +56,15 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         ).subscribe((e: any) => {
             const url: string = e.urlAfterRedirects || e.url || '';
             if (!url.includes('/login') && !url.includes('/tv-display') && !url.includes('/portal')) {
-                this.welcomeText = 'Bonjour ! 👋';
+                this.welcomeText = 'Bienvenue ! 👋';
                 this.showWelcome = true;
+                this.isWaving = true;   // wave on login arrival
                 setTimeout(() => {
                     this.showWelcome = false;
+                    this.isWaving = false;
                     this.cdr.detectChanges();
-                }, 2000);
+                }, 2200);
+                this.cdr.detectChanges();
             }
         });
 
@@ -86,27 +89,27 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         const cy = rect.top + rect.height / 2;
         const dx = e.clientX - cx;
         const dy = e.clientY - cy;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const maxDist = Math.max(300, dist);
+        const dist = Math.max(80, Math.sqrt(dx * dx + dy * dy));
 
-        // Pupils: up to ±5px
-        this.eyeX = Math.max(-5, Math.min(5, (dx / maxDist) * 5));
-        this.eyeY = Math.max(-4, Math.min(4, (dy / maxDist) * 4));
+        // No pupil movement — head rotates instead
+        this.eyeX = 0;
+        this.eyeY = 0;
 
-        // Head horizontal tilt: ±12deg based on X
-        this.headRotY = Math.max(-12, Math.min(12, (dx / maxDist) * 12));
+        // HEAD rotates toward cursor: ±28deg horizontal, ±18deg vertical
+        this.headRotY = Math.max(-28, Math.min(28, (dx / dist) * 28));
+        this.headRotX = this.headRotX; // keep scroll value; don't override
 
         // Detect hovering over logout button
         const target = e.target as HTMLElement;
-        const btn = target.closest('button');
+        const btn = target.closest('button')?.closest ? target.closest('button') : null;
         if (btn) {
-            const icon = btn.querySelector('.material-symbols-outlined');
+            const icon = (btn as HTMLElement).querySelector('.material-symbols-outlined');
             const iconText = icon?.textContent?.trim() || '';
-            const btnText = (btn.textContent || '').toLowerCase();
+            const btnText = ((btn as HTMLElement).textContent || '').toLowerCase();
             const isLogout = iconText === 'logout' || btnText.includes('déconnexion') || btnText.includes('quitter');
-            this.isWaving = isLogout;
+            if (!this.showWelcome) this.isWaving = isLogout;
         } else {
-            this.isWaving = false;
+            if (!this.showWelcome) this.isWaving = false;
         }
 
         this.cdr.detectChanges();
