@@ -149,57 +149,36 @@
         <!-- RIGHT: Stats panels -->
         <aside class="tv-stats-panel">
 
-            <!-- By status -->
+            <!-- By status (Donut Chart) -->
             <div class="tv-stat-block" *ngIf="stats">
                 <div class="tv-panel-header">
                     <span class="material-symbols-outlined tv-panel-icon" style="color:#6366f1">donut_large</span>
                     <h3>Répartition par Statut</h3>
                 </div>
-                <div class="tv-status-list">
-                    <div class="tv-status-row" *ngFor="let item of stats.parEtat | keyvalue">
-                        <div class="tv-status-bar-wrap">
-                            <div class="tv-status-label-row">
-                                <span class="tv-sl">{{ item.key }}</span>
-                                <span class="tv-sv">{{ item.value }}</span>
-                            </div>
-                            <div class="tv-status-track">
-                                <div class="tv-status-fill" [style.width]="((+item.value / stats.total) * 100) + '%'"
-                                    [style.background]="item.key==='En Cours'?'#3b82f6':item.key==='Clôturé'?'#10b981':item.key==='En Retard'?'#f59e0b':'#ef4444'">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="tv-chart-container">
+                    <canvas #etatChart></canvas>
                 </div>
             </div>
 
-            <!-- By division -->
+            <!-- By division (Bar Chart) -->
             <div class="tv-stat-block">
                 <div class="tv-panel-header">
                     <span class="material-symbols-outlined tv-panel-icon" style="color:#10b981">public</span>
                     <h3>Budget par Division</h3>
                 </div>
-                <div class="tv-div-list">
-                    <div class="tv-div-row" *ngFor="let div of ['D01','D02','D03','D04']">
-                        <div class="tv-div-info">
-                            <span class="tv-div-dot"
-                                [style.background]="div==='D01'?'#10b981':div==='D02'?'#06b6d4':div==='D03'?'#f59e0b':'#3b82f6'">
-                            </span>
-                            <span class="tv-div-name">{{ div }}</span>
-                        </div>
-                        <div class="tv-div-stats">
-                            <span>{{ divisionStats[div]?.count || 0 }} proj.</span>
-                            <span class="tv-div-budget">{{ formatBudget(divisionStats[div]?.totalBudget || 0) }}</span>
-                        </div>
-                        <div class="tv-div-bar-wrap">
-                            <div class="tv-div-bar-track">
-                                <div class="tv-div-bar-fill"
-                                    [style.width]="(divisionStats[div]?.avgProgress || 0) + '%'"
-                                    [style.background]="div==='D01'?'#10b981':div==='D02'?'#06b6d4':div==='D03'?'#f59e0b':'#3b82f6'">
-                                </div>
-                            </div>
-                            <span class="tv-div-pct">{{ divisionStats[div]?.avgProgress || 0 }}%</span>
-                        </div>
-                    </div>
+                <div class="tv-chart-container">
+                    <canvas #budgetChart></canvas>
+                </div>
+            </div>
+
+            <!-- Avancement Moyen (Horizontal Bar Chart) -->
+            <div class="tv-stat-block">
+                <div class="tv-panel-header">
+                    <span class="material-symbols-outlined tv-panel-icon" style="color:#f59e0b">trending_up</span>
+                    <h3>Avancement Moyen par Division</h3>
+                </div>
+                <div class="tv-chart-container">
+                    <canvas #avancementChart></canvas>
                 </div>
             </div>
 
