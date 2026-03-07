@@ -4,6 +4,7 @@ import { AuthService, User } from '../app/services/auth.service';
 import { ProjectService, Project } from '../app/services/project.service';
 import { NotificationService } from '../app/services/notification.service';
 import { TranslationService } from '../app/services/translation.service';
+import { TvDetectionService } from '../app/services/tv-detection.service';
 
 @Component({
     selector: 'app-division-chief-dashboard',
@@ -47,10 +48,16 @@ export class DivisionChiefDashboardComponent implements OnInit {
         private projectService: ProjectService,
         public notifService: NotificationService,
         public translate: TranslationService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private tvDetection: TvDetectionService
     ) { }
 
     ngOnInit() {
+        if (this.tvDetection.isTvScreen()) {
+            this.router.navigate(['/tv-display']);
+            return;
+        }
+
         this.user = this.authService.getCurrentUser();
         // Load notifications from backend (shared between mobile & web)
         if (this.user) {

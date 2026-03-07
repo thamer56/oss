@@ -6,6 +6,7 @@ import { NotificationService, Notification } from '../app/services/notification.
 import { TranslationService } from '../app/services/translation.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TvDetectionService } from '../app/services/tv-detection.service';
 
 @Component({
     selector: 'app-super-admin-dashboard',
@@ -51,10 +52,16 @@ export class SuperAdminDashboardComponent implements OnInit, OnDestroy {
         private projectService: ProjectService,
         public notifService: NotificationService,
         public translate: TranslationService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private tvDetection: TvDetectionService
     ) { }
 
     ngOnInit() {
+        if (this.tvDetection.isTvScreen()) {
+            this.router.navigate(['/tv-display']);
+            return;
+        }
+
         this.user = this.authService.getCurrentUser();
 
         if (this.user) {

@@ -6,6 +6,7 @@ import { TranslationService } from '../app/services/translation.service';
 import { NotificationService, Notification } from '../app/services/notification.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TvDetectionService } from '../app/services/tv-detection.service';
 
 @Component({
     selector: 'app-director-dashboard',
@@ -50,10 +51,16 @@ export class DirectorDashboardComponent implements OnInit, OnDestroy {
         private projectService: ProjectService,
         public translate: TranslationService,
         public notifService: NotificationService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private tvDetection: TvDetectionService
     ) { }
 
     ngOnInit() {
+        if (this.tvDetection.isTvScreen()) {
+            this.router.navigate(['/tv-display']);
+            return;
+        }
+
         this.user = this.authService.getCurrentUser();
 
         if (this.user) {
