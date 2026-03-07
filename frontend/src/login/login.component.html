@@ -1,106 +1,82 @@
-<div class="scene" style="position:fixed;inset:0;overflow:hidden;font-family:'Inter',sans-serif;">
+<div class="login-layout">
 
-  <!-- Ambient orbs -->
-  <div class="orb-accent"></div>
-  <div class="orb-accent-2"></div>
-
-  <!-- Grid perspective depth -->
-  <div class="grid-lines"></div>
-
-  <!-- Floating particles -->
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-
-  <!-- Language switcher -->
-  <div class="lang-switcher">
-    <button class="lang-btn" [class.active]="currentLang==='fr'" (click)="setLang('fr')">FR</button>
-    <button class="lang-btn" [class.active]="currentLang==='en'" (click)="setLang('en')">EN</button>
+  <!-- Left image panel — Savanna -->
+  <div class="panel-image">
+    <img src="assets/africa_left.png" alt="Savane africaine" />
+    <span class="panel-label">🌍 Savane Africaine</span>
   </div>
 
-  <!-- Main centered content -->
-  <div
-    style="position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;">
+  <!-- Center login form -->
+  <div class="panel-login">
 
-    <!-- 3D Card wrapper -->
-    <div class="card-3d-wrapper">
-      <div class="card-3d">
-
-        <!-- Logo & Title -->
-        <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
-          <div class="logo-badge">
-            <img alt="OSS Logo" style="height:48px;width:auto;border-radius:12px;" src="assets/oss-logo.jpg"
-              onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex';" />
-            <div id="logo-fallback"
-              style="display:none;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#0067B1,#0052a3);">
-              <span style="color:#fff;font-weight:900;font-size:16px;letter-spacing:-1px;">OSS</span>
-            </div>
-          </div>
-
-          <div class="oss-stripe">
-            <span></span>
-            Sahara &amp; Sahel Observatory
-          </div>
-
-          <h1 class="title-text">{{ t.welcome }}</h1>
-          <p class="subtitle-text">{{ t.signInDesc }}</p>
-        </div>
-
-        <!-- Error message -->
-        <div *ngIf="errorMessage" class="error-3d">
-          <span class="material-symbols-outlined" style="font-size:18px;flex-shrink:0;">error</span>
-          <span>{{ errorMessage }}</span>
-        </div>
-
-        <!-- Form -->
-        <form (ngSubmit)="onSubmit()">
-
-          <!-- Email / Username -->
-          <div class="input-3d">
-            <label for="username">{{ t.usernameLabel }}</label>
-            <div class="input-inner">
-              <span class="icon-left material-symbols-outlined">person</span>
-              <input id="username" name="username" type="email" autocomplete="email" autocorrect="off"
-                autocapitalize="none" spellcheck="false" [placeholder]="t.usernamePlaceholder" [(ngModel)]="username"
-                required />
-            </div>
-          </div>
-
-          <!-- Password -->
-          <div class="input-3d">
-            <label for="password">{{ t.passwordLabel }}</label>
-            <div class="input-inner">
-              <span class="icon-left material-symbols-outlined">lock</span>
-              <input id="password" name="password" [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
-                [(ngModel)]="password" required style="padding-right:42px;" />
-              <span class="icon-right material-symbols-outlined" (click)="togglePasswordVisibility()">
-                {{ showPassword ? 'visibility' : 'visibility_off' }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Submit -->
-          <button class="btn-3d" type="submit">
-            {{ t.signInBtn }}
-          </button>
-
-        </form>
-
+    <!-- Logo -->
+    <div class="logo-badge">
+      <img alt="OSS Logo" style="height:50px;width:auto;border-radius:12px;" src="assets/oss-logo.jpg"
+        onerror="this.style.display='none';document.getElementById('logo-fb').style.display='flex';" />
+      <div id="logo-fb"
+        style="display:none;width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,#0067B1,#0052a3);align-items:center;justify-content:center;">
+        <span style="color:#fff;font-weight:900;font-size:17px;letter-spacing:-1px;">OSS</span>
       </div>
     </div>
 
-    <!-- Bottom label -->
-    <p
-      style="margin-top:20px;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;">
-      © 2025 OSS · Secured Portal
-    </p>
+    <!-- Stripe badge -->
+    <div class="oss-stripe">
+      <span class="dot"></span>
+      Observatoire du Sahara et du Sahel
+    </div>
+
+    <!-- Title -->
+    <h1 class="login-title">{{ t.welcome }}</h1>
+    <p class="login-subtitle">{{ t.signInDesc }}</p>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="error-box">
+      <span class="material-symbols-outlined" style="font-size:18px;flex-shrink:0;">error</span>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Form -->
+    <form style="width:100%;" (ngSubmit)="onSubmit()">
+
+      <!-- Email -->
+      <div class="field-group">
+        <label for="username">{{ t.usernameLabel }}</label>
+        <div class="field-inner">
+          <span class="icon-left material-symbols-outlined">person</span>
+          <input id="username" name="username" type="email" autocomplete="email" autocorrect="off" autocapitalize="none"
+            spellcheck="false" [placeholder]="t.usernamePlaceholder" [(ngModel)]="username" required />
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="field-group">
+        <label for="password">{{ t.passwordLabel }}</label>
+        <div class="field-inner">
+          <span class="icon-left material-symbols-outlined">lock</span>
+          <input id="password" name="password" [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
+            [(ngModel)]="password" required style="padding-right:42px;" />
+          <span class="icon-right material-symbols-outlined" (click)="togglePasswordVisibility()">
+            {{ showPassword ? 'visibility' : 'visibility_off' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button class="btn-submit" type="submit">
+        {{ t.signInBtn }}
+      </button>
+
+    </form>
+
+    <!-- Footer -->
+    <p class="login-footer">© 2025 OSS · Portail Sécurisé</p>
 
   </div>
+
+  <!-- Right image panel — Forest -->
+  <div class="panel-image right">
+    <img src="assets/africa_right.png" alt="Forêt tropicale africaine" />
+    <span class="panel-label">🌿 Forêt Tropicale</span>
+  </div>
+
 </div>
