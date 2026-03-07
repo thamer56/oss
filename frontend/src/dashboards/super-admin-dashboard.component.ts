@@ -1,15 +1,18 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../app/services/auth.service';
 import { ProjectService } from '../app/services/project.service';
-import { NotificationService } from '../app/services/notification.service';
+import { NotificationService, Notification } from '../app/services/notification.service';
 import { TranslationService } from '../app/services/translation.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-super-admin-dashboard',
     templateUrl: './super-admin-dashboard.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SuperAdminDashboardComponent implements OnInit {
+export class SuperAdminDashboardComponent implements OnInit, OnDestroy {
     user: User | null = null;
     stats: any = {};
     divisionStats: any = {};
@@ -17,67 +20,18 @@ export class SuperAdminDashboardComponent implements OnInit {
     allProjects: any[] = [];
     activeTab: 'projets' | 'stats' = 'projets';
 
-    get activities() {
-        if (!this.user) return [];
-        return this.notifService
-            .getNotificationsForUser(this.user.username, this.user.role, this.user.division_id)
-            .slice(0, 10) // Show last 10
-            .map(n => {
-                let color = 'blue';
-                let typeText = 'SYSTÈME';
-                if (n.type === 'success') {
-                    color = 'emerald';
-                    typeText = 'PROJET';
-                } else if (n.type === 'warning') {
-                    color = 'amber';
-                    typeText = 'ALERTE';
-                } else if (n.message.includes('Ajouté')) {
-                    color = 'blue';
-                    typeText = 'ADMIN';
-                }
-
-                // Simple relative time phrasing
-                const diffMs = new Date().getTime() - new Date(n.createdAt).getTime();
-                const diffMins = Math.floor(diffMs / 60000);
-                const diffHrs = Math.floor(diffMins / 60);
-                const diffDays = Math.floor(diffHrs / 24);
-                let timeStr = "à l'instant";
-                if (diffDays > 0) timeStr = `il y a ${diffDays}j`;
-                else if (diffHrs > 0) timeStr = `il y a ${diffHrs}h`;
-                else if (diffMins > 0) timeStr = `il y a ${diffMins}m`;
-
-                // Try to extract title/desc heuristically
-                // e.g., "Tâche \"XYZ\" terminée sur le projet \"ABC\" par John."
-                let title = n.projectName || 'Notification';
-                let desc = n.message;
-                return {
-                    icon: n.icon || 'info',
-                    color: color,
-                    title: title,
-                    time: timeStr,
-                    description: desc,
-                    type: typeText
-                };
-            });
-    }
+    // Pre-computed arrays (not getters recomputed on every change-detection cycle)
+    activities: any[] = [];
+    notifications: Notification[] = [];
+    unreadCount: number = 0;
+    availableYears: string[] = [];
+    availablePays: string[] = [];
 
     // Filters
     filterDivision: string = '';
     filterYear: string = '';
     filterPays: string = '';
-    get availableYears(): string[] {
-        const years = new Set<string>();
-        this.allProjects.forEach(p => { if (p.annee_debut) years.add(String(p.annee_debut)); });
-        return Array.from(years).sort((a, b) => +b - +a);
-    }
-    get availablePays(): string[] {
-        const pays = new Set<string>();
-        this.allProjects.forEach(p => {
-            if (p.beneficiaires_pays) p.beneficiaires_pays.split(',').forEach((c: string) => pays.add(c.trim()));
-        });
-        return Array.from(pays).sort();
-    }
-    // Keep old name for division card clicks
+
     get selectedDivisionFilter() { return this.filterDivision; }
     get activeFilterCount() { return [this.filterYear, this.filterDivision, this.filterPays].filter(f => f).length; }
 
@@ -87,20 +41,8 @@ export class SuperAdminDashboardComponent implements OnInit {
     selectedProject: any = {};
     showNotifPanel = false;
 
-    get notifications() {
-        if (!this.user) return [];
-        return this.notifService.getNotificationsForUser(this.user.username, this.user.role, this.user.division_id);
-    }
-
-    get unreadCount(): number {
-        if (!this.user) return 0;
-        return this.notifService.getUnreadCount(this.user.username, this.user.role, this.user.division_id);
-    }
-
-    markAllRead() {
-        if (!this.user) return;
-        this.notifService.markAllRead(this.user.username, this.user.role, this.user.division_id);
-    }
+    // Unsubscribe trigger — prevents memory leaks
+    private destroy$ = new Subject<void>();
 
     constructor(
         private authService: AuthService,
@@ -113,24 +55,98 @@ export class SuperAdminDashboardComponent implements OnInit {
 
     ngOnInit() {
         this.user = this.authService.getCurrentUser();
-        // Load notifications from backend (shared between mobile & web)
+
         if (this.user) {
             this.notifService.loadNotifications(this.user.username, this.user.role, this.user.division_id);
         }
-        this.notifService.notifications$.subscribe(() => this.cdr.markForCheck());
-        this.translate.lang$.subscribe(() => this.cdr.markForCheck());
-        this.projectService.projects$.subscribe(() => {
-            this.refreshData();
+
+        // Subscribe to notifications — unsubscribe on destroy to avoid memory leaks
+        this.notifService.notifications$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                this.refreshNotifications();
+                this.cdr.markForCheck();
+            });
+
+        // Subscribe to translation changes
+        this.translate.lang$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.cdr.markForCheck());
+
+        // Subscribe to project changes
+        this.projectService.projects$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                this.refreshData();
+                this.cdr.markForCheck();
+            });
+    }
+
+    ngOnDestroy() {
+        // Unsubscribe from all subscriptions to prevent memory leaks
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    /** Recompute notification-related arrays (called once per emission, not on every render) */
+    private refreshNotifications() {
+        if (!this.user) return;
+
+        const all = this.notifService.getNotificationsForUser(
+            this.user.username, this.user.role, this.user.division_id
+        );
+
+        this.notifications = all;
+        this.unreadCount = all.filter(n => !n.read).length;
+
+        // Build activities list (computed once, stored as property)
+        const now = new Date().getTime();
+        this.activities = all.slice(0, 10).map(n => {
+            let color = 'blue';
+            let typeText = 'SYSTÈME';
+            if (n.type === 'success') { color = 'emerald'; typeText = 'PROJET'; }
+            else if (n.type === 'warning') { color = 'amber'; typeText = 'ALERTE'; }
+            else if (n.message.includes('Ajouté')) { color = 'blue'; typeText = 'ADMIN'; }
+
+            const diffMs = now - new Date(n.createdAt).getTime();
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHrs = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHrs / 24);
+            let timeStr = "à l'instant";
+            if (diffDays > 0) timeStr = `il y a ${diffDays}j`;
+            else if (diffHrs > 0) timeStr = `il y a ${diffHrs}h`;
+            else if (diffMins > 0) timeStr = `il y a ${diffMins}m`;
+
+            return {
+                icon: n.icon || 'info',
+                color,
+                title: n.projectName || 'Notification',
+                time: timeStr,
+                description: n.message,
+                type: typeText
+            };
         });
     }
 
     refreshData() {
         this.allProjects = this.projectService.getAllProjects();
-        this.filterProjects();
+        this.applyFilters();
         this.stats = this.projectService.getGlobalStats();
         ['D01', 'D02', 'D03', 'D04'].forEach(div => {
             this.divisionStats[div] = this.projectService.getDivisionStats(div);
         });
+
+        // Recompute filter options from data
+        const years = new Set<string>();
+        const pays = new Set<string>();
+        this.allProjects.forEach(p => {
+            if (p.annee_debut) years.add(String(p.annee_debut));
+            if (p.beneficiaires_pays) {
+                p.beneficiaires_pays.split(',').forEach((c: string) => pays.add(c.trim()));
+            }
+        });
+        this.availableYears = Array.from(years).sort((a, b) => +b - +a);
+        this.availablePays = Array.from(pays).sort();
     }
 
     filterProjects(division?: string) {
@@ -186,6 +202,11 @@ export class SuperAdminDashboardComponent implements OnInit {
             this.projectService.removeProject(id);
             this.refreshData();
         }
+    }
+
+    markAllRead() {
+        if (!this.user) return;
+        this.notifService.markAllRead(this.user.username, this.user.role, this.user.division_id);
     }
 
     logout() {
