@@ -9,18 +9,23 @@
 /* Full-height 3-column wrapper */
 .login-layout {
     display: flex;
+    flex-direction: row;
     height: 100vh;
+    min-height: 100vh;
     width: 100vw;
     overflow: hidden;
     background: #f0f4f8;
     font-family: 'Inter', 'Segoe UI', sans-serif;
+    align-items: stretch;
 }
 
 /* ── Left & Right image panels ── */
 .panel-image {
     flex: 1 1 0;
+    min-width: 0;
     position: relative;
     overflow: hidden;
+    display: block;
 }
 
 .panel-image img {
@@ -79,6 +84,8 @@
 .panel-login {
     flex: 0 0 420px;
     width: 420px;
+    max-width: 420px;
+    min-width: 320px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -90,6 +97,7 @@
     position: relative;
     z-index: 10;
     padding: 40px 36px;
+    overflow: hidden;
 }
 
 /* Top accent line */
