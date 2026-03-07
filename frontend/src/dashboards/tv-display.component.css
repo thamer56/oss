@@ -263,9 +263,10 @@
     flex: 1;
     gap: clamp(10px, 1.5vw, 30px);
     overflow: hidden;
-    min-height: 0;
-    padding: clamp(10px, 1.5vw, 30px);
+    padding: clamp(10px, 1.5vw, 20px) clamp(16px, 2vw, 30px);
     background: transparent;
+    max-height: calc(100vh - 160px);
+    /* Leave room for header, KPI strip, footer */
 }
 
 /* ── Projects Panel (LEFT ~65%) ── */
@@ -332,9 +333,12 @@
 .tv-table-wrap {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     /* allow the table to stretch entirely */
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    /* allows flex child to scroll */
 }
 
 .tv-table {
@@ -516,13 +520,16 @@
 .tv-stats-panel {
     flex: 1;
     /* takes 1/3 of space */
-    min-width: 400px;
+    min-width: 350px;
     max-width: 600px;
     display: flex;
     flex-direction: column;
-    gap: clamp(10px, 1.5vw, 30px);
+    gap: clamp(10px, 1.5vw, 20px);
     overflow-y: auto;
+    overflow-x: hidden;
     background: transparent;
+    height: 100%;
+    padding-right: 6px;
 }
 
 .tv-stat-block {
@@ -531,9 +538,9 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    flex: 1;
-    /* stretch to fill available sidebar height */
-    min-height: 250px;
+    flex-shrink: 0;
+    /* Prevent squishing charts */
+    min-height: 280px;
     overflow: hidden;
 }
 
@@ -541,7 +548,8 @@
     flex: 1;
     position: relative;
     padding: 16px;
-    min-height: 200px;
+    min-height: 220px;
+    width: 100%;
 }
 
 .tv-status-list {
