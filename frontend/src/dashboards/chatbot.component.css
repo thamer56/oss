@@ -55,6 +55,15 @@
     animation: bot-float 3.5s ease-in-out infinite;
 }
 
+/* Drag-active state */
+.bot-scene.bot-dragging {
+    cursor: grabbing !important;
+    animation: none !important;
+    /* freeze float while dragging */
+    filter: drop-shadow(0 0 14px rgba(0, 103, 177, 0.65));
+    transition: filter 0.2s;
+}
+
 .bot-scene:hover .bot-tooltip {
     opacity: 1;
     transform: translateY(-4px);

@@ -1,5 +1,5 @@
 import {
-    Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener, ChangeDetectorRef
+    Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener, ChangeDetectorRef, Renderer2
 } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AiService } from '../app/services/ai.service';
@@ -33,6 +33,19 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     showWelcome = false;
     welcomeText = '';
 
+    // ── Drag state ──────────────────────────────────────────────────────────
+    isDragging = false;
+    dragX: number | null = null;   // left px from window left
+    dragY: number | null = null;   // top px from window top
+    private _dragActive = false;   // true while pointer is moving during drag
+    private _justDragged = false;  // blocks the click that fires right after mouseup
+    private _longPressTimer: any = null;
+    private _dragStartX = 0;
+    private _dragStartY = 0;
+    private _botOffsetX = 0;
+    private _botOffsetY = 0;
+    private _unlisteners: (() => void)[] = [];
+
     @ViewChild('chatWindow') chatWindow?: ElementRef;
     @ViewChild('botEl') botEl?: ElementRef;
 
@@ -44,7 +57,8 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         private authService: AuthService,
         private router: Router,
         public translate: TranslationService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private renderer: Renderer2
     ) {
         this.messages = [{ sender: 'ai', text: this.translate.t.chatWelcome }];
     }
@@ -73,6 +87,9 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         clearTimeout(this.scrollTimer);
+        this._clearLongPress();
+        this._unlisteners.forEach(fn => fn());
+        this._unlisteners = [];
     }
 
     get isLoginRoute(): boolean {
@@ -134,8 +151,108 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         }, 800);
     }
 
+    // ── Drag: long-press activates drag ────────────────────────────────────
+    onBotPointerDown(event: MouseEvent | TouchEvent) {
+        // Determine start coordinates
+        const clientX = event instanceof TouchEvent ? event.touches[0].clientX : (event as MouseEvent).clientX;
+        const clientY = event instanceof TouchEvent ? event.touches[0].clientY : (event as MouseEvent).clientY;
+        this._dragStartX = clientX;
+        this._dragStartY = clientY;
+        this._dragActive = false;
+
+        if (this.botEl) {
+            const rect = this.botEl.nativeElement.getBoundingClientRect();
+            // Offset of pointer inside the bot element
+            this._botOffsetX = clientX - rect.left;
+            this._botOffsetY = clientY - rect.top;
+        }
+
+        this._clearLongPress();
+        this._longPressTimer = setTimeout(() => {
+            this.isDragging = true;
+            this._dragActive = false; // movement not started yet, just activated
+            this.cdr.detectChanges();
+            this._attachDragListeners();
+        }, 350);
+
+        // prevent context menu on long-press
+        event.preventDefault();
+    }
+
+    private _clearLongPress() {
+        if (this._longPressTimer) {
+            clearTimeout(this._longPressTimer);
+            this._longPressTimer = null;
+        }
+    }
+
+    private _attachDragListeners() {
+        // Mouse
+        const onMouseMove = (e: MouseEvent) => this._onDragMove(e.clientX, e.clientY);
+        const onMouseUp = () => this._onDragEnd();
+        // Touch
+        const onTouchMove = (e: TouchEvent) => { e.preventDefault(); this._onDragMove(e.touches[0].clientX, e.touches[0].clientY); };
+        const onTouchEnd = () => this._onDragEnd();
+
+        const u1 = this.renderer.listen('document', 'mousemove', onMouseMove);
+        const u2 = this.renderer.listen('document', 'mouseup', onMouseUp);
+        // touchmove needs passive:false so we can preventDefault — use native addEventListener
+        document.addEventListener('touchmove', onTouchMove, { passive: false });
+        const u4 = this.renderer.listen('document', 'touchend', onTouchEnd);
+        this._unlisteners.push(u1, u2, () => document.removeEventListener('touchmove', onTouchMove), u4);
+    }
+
+    private _onDragMove(clientX: number, clientY: number) {
+        if (!this.isDragging) return;
+        this._dragActive = true;
+
+        // Calculate new top-left position so the pointer stays at _botOffset inside the element
+        let newLeft = clientX - this._botOffsetX;
+        let newTop = clientY - this._botOffsetY;
+
+        // Clamp within viewport
+        const el: HTMLElement = this.botEl?.nativeElement;
+        const w = el ? el.offsetWidth : 70;
+        const h = el ? el.offsetHeight : 130;
+        newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - w));
+        newTop = Math.max(0, Math.min(newTop, window.innerHeight - h));
+
+        this.dragX = newLeft;
+        this.dragY = newTop;
+        this.cdr.detectChanges();
+    }
+
+    private _onDragEnd() {
+        this._clearLongPress();
+        this._unlisteners.forEach(fn => fn());
+        this._unlisteners = [];
+        const wasDragging = this._dragActive;
+        this.isDragging = false;
+        this._dragActive = false;
+        if (wasDragging) {
+            // Block the click that fires right after mouseup/touchend
+            this._justDragged = true;
+            setTimeout(() => { this._justDragged = false; }, 0);
+        }
+        this.cdr.detectChanges();
+    }
+
+    get botDragStyle(): { [key: string]: string } {
+        if (this.dragX !== null && this.dragY !== null) {
+            return {
+                left: this.dragX + 'px',
+                top: this.dragY + 'px',
+                right: 'auto',
+                bottom: 'auto'
+            };
+        }
+        return {};
+    }
+
     // ── Chat toggle with jump ───────────────────────────────────────────────
     toggleChat() {
+        // Don't open chat if the user just finished dragging
+        if (this._justDragged) return;
         if (!this.isOpen) {
             // Jump animation before opening
             this.isJumping = true;

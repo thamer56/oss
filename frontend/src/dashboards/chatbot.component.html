@@ -6,7 +6,9 @@
     </div>
 
     <!-- ══ THE BOT CHARACTER (always visible, closed state) ══ -->
-    <div class="bot-scene" #botEl [class.bot-jumping]="isJumping" (click)="toggleChat()" *ngIf="!isOpen || isJumping">
+    <div class="bot-scene" #botEl [class.bot-jumping]="isJumping" [class.bot-dragging]="isDragging"
+        [ngStyle]="botDragStyle" (click)="toggleChat()" (mousedown)="onBotPointerDown($event)"
+        (touchstart)="onBotPointerDown($event)" (contextmenu)="$event.preventDefault()" *ngIf="!isOpen || isJumping">
 
         <!-- Wave arm (appears on logout hover OR welcome) -->
         <div class="bot-arm-wrap" [class.waving]="isWaving">
