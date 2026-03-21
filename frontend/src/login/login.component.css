@@ -331,15 +331,83 @@
     text-align: center;
 }
 
-/* ── Responsive: hide side panels on small screens ── */
+/* ── Responsive: mobile — images as background split-screen ── */
 @media (max-width: 900px) {
-    .panel-image {
-        display: none;
+
+    /* Make the outer wrapper a positioned container */
+    .login-layout {
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 
+    /* Left image: absolute, left half of screen */
+    .panel-image {
+        display: block;
+        position: absolute;
+        inset: 0;
+        width: 50%;
+        height: 100%;
+    }
+
+    /* Right image: absolute, right half of screen */
+    .panel-image.right {
+        left: 50%;
+        right: 0;
+        width: 50%;
+    }
+
+    /* Stronger gradient overlay on mobile so form is readable */
+    .panel-image::after {
+        background: linear-gradient(to right, transparent 20%, rgba(240, 244, 248, 0.7) 100%);
+    }
+
+    .panel-image.right::after {
+        background: linear-gradient(to left, transparent 20%, rgba(240, 244, 248, 0.7) 100%);
+    }
+
+    /* Login card: floats centered, z-index above images */
     .panel-login {
-        flex: 1;
-        width: 100%;
-        box-shadow: none;
+        position: relative;
+        z-index: 10;
+        flex: 0 0 auto;
+        width: min(88vw, 400px);
+        max-width: 400px;
+        min-width: 280px;
+        border-radius: 20px;
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.18),
+            0 0 0 1px rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.90);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        padding: 32px 28px;
+    }
+
+    /* Labels: hide on very small screens to save space */
+    .panel-label {
+        display: none;
+    }
+}
+
+/* ── Extra small: tighten the form further ── */
+@media (max-width: 480px) {
+    .panel-login {
+        width: 92vw;
+        padding: 28px 20px;
+    }
+
+    .login-title {
+        font-size: 19px;
+    }
+
+    /* Slightly stronger overlay for very small phones */
+    .panel-image::after {
+        background: linear-gradient(to right, transparent 0%, rgba(240, 244, 248, 0.75) 100%);
+    }
+
+    .panel-image.right::after {
+        background: linear-gradient(to left, transparent 0%, rgba(240, 244, 248, 0.75) 100%);
     }
 }

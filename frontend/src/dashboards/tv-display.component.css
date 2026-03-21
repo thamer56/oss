@@ -516,20 +516,19 @@
     white-space: nowrap;
 }
 
-/* ── Stats Panel (RIGHT ~35%) ── */
+/* ── Stats Panel (FULL WIDTH — Power BI grid) ── */
 .tv-stats-panel {
     flex: 1;
-    /* takes 1/3 of space */
-    min-width: 350px;
-    max-width: 600px;
-    display: flex;
-    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     gap: clamp(10px, 1.5vw, 20px);
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     background: transparent;
     height: 100%;
-    padding-right: 6px;
+    padding-right: 0;
 }
 
 .tv-stat-block {
@@ -538,17 +537,15 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
-    /* Prevent squishing charts */
-    min-height: 280px;
     overflow: hidden;
+    min-height: 0;
 }
 
 .tv-chart-container {
     flex: 1;
     position: relative;
     padding: 16px;
-    min-height: 220px;
+    min-height: 0;
     width: 100%;
 }
 
