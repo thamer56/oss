@@ -24,10 +24,10 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     messages: ChatMessage[] = [];
 
     // Bot state
-    eyeX = 0;       // pupil horizontal offset px
-    eyeY = 0;       // pupil vertical offset px
-    headRotY = 0;   // head horizontal tilt deg
-    headRotX = 0;   // head vertical tilt from scroll deg
+    eyeX = 0;
+    eyeY = 0;
+    headRotY = 0;
+    headRotX = 0;
     isWaving = false;
     isJumping = false;
     showWelcome = false;
@@ -35,15 +35,20 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
     // ── Drag state ──────────────────────────────────────────────────────────
     isDragging = false;
-    dragX: number | null = null;   // left px from window left
-    dragY: number | null = null;   // top px from window top
-    private _dragActive = false;   // true while pointer is moving during drag
-    private _justDragged = false;  // blocks the click that fires right after mouseup
-    private _longPressTimer: any = null;
-    private _dragStartX = 0;
-    private _dragStartY = 0;
+    dragX: number | null = null;   // left px from viewport left edge
+    dragY: number | null = null;   // top  px from viewport top  edge
+
+    // PC sticky-drag (double-click activates, single-click deactivates)
+    private _pcDragMode = false;
+    private _clickCount = 0;
+    private _clickTimer: any = null;
     private _botOffsetX = 0;
     private _botOffsetY = 0;
+
+    // Mobile long-press drag
+    private _longPressTimer: any = null;
+    private _touchDragActive = false; // true once finger starts moving after long-press
+    private _justDragged = false;     // blocks spurious click after touch drag
     private _unlisteners: (() => void)[] = [];
 
     @ViewChild('chatWindow') chatWindow?: ElementRef;
@@ -64,7 +69,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        // Show welcome bubble on each login (navigating from /login → dashboard)
         this.router.events.pipe(
             filter(e => e instanceof NavigationEnd)
         ).subscribe((e: any) => {
@@ -72,7 +76,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
             if (!url.includes('/login') && !url.includes('/tv-display') && !url.includes('/portal')) {
                 this.welcomeText = 'Bienvenue ! 👋';
                 this.showWelcome = true;
-                this.isWaving = true;   // wave on login arrival
+                this.isWaving = true;
                 setTimeout(() => {
                     this.showWelcome = false;
                     this.isWaving = false;
@@ -81,13 +85,13 @@ export class ChatbotComponent implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             }
         });
-
         this.lastScrollY = window.scrollY;
     }
 
     ngOnDestroy() {
         clearTimeout(this.scrollTimer);
-        this._clearLongPress();
+        clearTimeout(this._longPressTimer);
+        clearTimeout(this._clickTimer);
         this._unlisteners.forEach(fn => fn());
         this._unlisteners = [];
     }
@@ -97,9 +101,15 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         return url === '/login' || url === '/' || url.includes('/portal');
     }
 
-    // ── Cursor tracking → eyes follow ──────────────────────────────────────
+    // ── Cursor / eye tracking + PC drag movement ────────────────────────────
     @HostListener('document:mousemove', ['$event'])
     onMouseMove(e: MouseEvent) {
+        // PC sticky-drag: bot follows mouse
+        if (this._pcDragMode && this.isDragging) {
+            this._moveBotTo(e.clientX, e.clientY);
+            return; // skip eye tracking while dragging
+        }
+
         if (!this.botEl) return;
         const rect = this.botEl.nativeElement.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
@@ -108,22 +118,17 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         const dy = e.clientY - cy;
         const dist = Math.max(80, Math.sqrt(dx * dx + dy * dy));
 
-        // WHOLE BOT rotates 3D toward cursor: ±30deg horizontal
         this.headRotY = Math.max(-30, Math.min(30, (dx / dist) * 30));
-
-        // Pupils ALSO track cursor within eyes: ±5px
         this.eyeX = Math.max(-5, Math.min(5, (dx / dist) * 5));
         this.eyeY = Math.max(-4, Math.min(4, (dy / dist) * 4));
 
-        // headRotX stays from scroll — don't override here
-
-        // Detect hovering over logout button
+        // Detect logout button hover
         const target = e.target as HTMLElement;
-        const btn = target.closest('button')?.closest ? target.closest('button') : null;
+        const btn = target.closest('button') as HTMLElement | null;
         if (btn) {
-            const icon = (btn as HTMLElement).querySelector('.material-symbols-outlined');
+            const icon = btn.querySelector('.material-symbols-outlined');
             const iconText = icon?.textContent?.trim() || '';
-            const btnText = ((btn as HTMLElement).textContent || '').toLowerCase();
+            const btnText = (btn.textContent || '').toLowerCase();
             const isLogout = iconText === 'logout' || btnText.includes('déconnexion') || btnText.includes('quitter');
             if (!this.showWelcome) this.isWaving = isLogout;
         } else {
@@ -133,17 +138,15 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
     }
 
-    // ── Scroll → head looks up/down ────────────────────────────────────────
+    // ── Scroll → head looks up/down ─────────────────────────────────────────
     @HostListener('window:scroll')
     onScroll() {
         const delta = window.scrollY - this.lastScrollY;
         this.lastScrollY = window.scrollY;
-
         if (Math.abs(delta) > 2) {
-            this.headRotX = delta > 0 ? 14 : -10;  // look down / look up
+            this.headRotX = delta > 0 ? 14 : -10;
             this.cdr.detectChanges();
         }
-
         clearTimeout(this.scrollTimer);
         this.scrollTimer = setTimeout(() => {
             this.headRotX = 0;
@@ -151,67 +154,111 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         }, 800);
     }
 
-    // ── Drag: long-press activates drag ────────────────────────────────────
-    onBotPointerDown(event: MouseEvent | TouchEvent) {
-        // Determine start coordinates
-        const clientX = event instanceof TouchEvent ? event.touches[0].clientX : (event as MouseEvent).clientX;
-        const clientY = event instanceof TouchEvent ? event.touches[0].clientY : (event as MouseEvent).clientY;
-        this._dragStartX = clientX;
-        this._dragStartY = clientY;
-        this._dragActive = false;
+    // ── PC: double-click detection on bot click ──────────────────────────────
+    //   1st click  → wait 280ms, if no 2nd click → open/close chat
+    //   2nd click within 280ms → activate sticky drag mode
+    //   While in PC drag mode, any click → exit drag mode
+    onBotClick(event: MouseEvent) {
+        // Escape drag mode on a single click
+        if (this._pcDragMode && this.isDragging) {
+            this._exitPCDrag();
+            return;
+        }
+        if (this._justDragged) return;
+
+        // Double-click detection
+        this._clickCount++;
+        clearTimeout(this._clickTimer);
+
+        if (this._clickCount >= 2) {
+            this._clickCount = 0;
+            this._activatePCDrag(event);
+            return;
+        }
+
+        this._clickTimer = setTimeout(() => {
+            this._clickCount = 0;
+            // Treat as single click → toggle chat
+            this._doToggleChat();
+        }, 280);
+    }
+
+    private _activatePCDrag(event: MouseEvent) {
+        const el = this.botEl?.nativeElement as HTMLElement;
+        if (el) {
+            const rect = el.getBoundingClientRect();
+            this._botOffsetX = event.clientX - rect.left;
+            this._botOffsetY = event.clientY - rect.top;
+        } else {
+            this._botOffsetX = 35;
+            this._botOffsetY = 65;
+        }
+        this._pcDragMode = true;
+        this.isDragging = true;
+        this.cdr.detectChanges();
+    }
+
+    private _exitPCDrag() {
+        this._pcDragMode = false;
+        this.isDragging = false;
+        this.cdr.detectChanges();
+    }
+
+    // ── Mobile: long-press drag ──────────────────────────────────────────────
+    onBotTouchStart(event: TouchEvent) {
+        const touch = event.touches[0];
+        this._touchDragActive = false;
 
         if (this.botEl) {
             const rect = this.botEl.nativeElement.getBoundingClientRect();
-            // Offset of pointer inside the bot element
-            this._botOffsetX = clientX - rect.left;
-            this._botOffsetY = clientY - rect.top;
+            this._botOffsetX = touch.clientX - rect.left;
+            this._botOffsetY = touch.clientY - rect.top;
         }
 
-        this._clearLongPress();
+        clearTimeout(this._longPressTimer);
         this._longPressTimer = setTimeout(() => {
             this.isDragging = true;
-            this._dragActive = false; // movement not started yet, just activated
             this.cdr.detectChanges();
-            this._attachDragListeners();
+            this._attachTouchDragListeners();
         }, 350);
 
-        // prevent context menu on long-press
         event.preventDefault();
     }
 
-    private _clearLongPress() {
-        if (this._longPressTimer) {
+    private _attachTouchDragListeners() {
+        const onTouchMove = (e: TouchEvent) => {
+            e.preventDefault();
+            this._touchDragActive = true;
+            this._moveBotTo(e.touches[0].clientX, e.touches[0].clientY);
+        };
+        const onTouchEnd = () => {
             clearTimeout(this._longPressTimer);
-            this._longPressTimer = null;
-        }
-    }
+            this._unlisteners.forEach(fn => fn());
+            this._unlisteners = [];
+            const wasDragging = this._touchDragActive;
+            this.isDragging = false;
+            this._touchDragActive = false;
+            if (wasDragging) {
+                this._justDragged = true;
+                setTimeout(() => { this._justDragged = false; }, 0);
+            }
+            this.cdr.detectChanges();
+        };
 
-    private _attachDragListeners() {
-        // Mouse
-        const onMouseMove = (e: MouseEvent) => this._onDragMove(e.clientX, e.clientY);
-        const onMouseUp = () => this._onDragEnd();
-        // Touch
-        const onTouchMove = (e: TouchEvent) => { e.preventDefault(); this._onDragMove(e.touches[0].clientX, e.touches[0].clientY); };
-        const onTouchEnd = () => this._onDragEnd();
-
-        const u1 = this.renderer.listen('document', 'mousemove', onMouseMove);
-        const u2 = this.renderer.listen('document', 'mouseup', onMouseUp);
-        // touchmove needs passive:false so we can preventDefault — use native addEventListener
         document.addEventListener('touchmove', onTouchMove, { passive: false });
-        const u4 = this.renderer.listen('document', 'touchend', onTouchEnd);
-        this._unlisteners.push(u1, u2, () => document.removeEventListener('touchmove', onTouchMove), u4);
+        const u2 = this.renderer.listen('document', 'touchend', onTouchEnd);
+        this._unlisteners.push(
+            () => document.removeEventListener('touchmove', onTouchMove),
+            u2
+        );
     }
 
-    private _onDragMove(clientX: number, clientY: number) {
-        if (!this.isDragging) return;
-        this._dragActive = true;
-
-        // Calculate new top-left position so the pointer stays at _botOffset inside the element
+    // ── Shared movement helper ───────────────────────────────────────────────
+    private _moveBotTo(clientX: number, clientY: number) {
         let newLeft = clientX - this._botOffsetX;
         let newTop = clientY - this._botOffsetY;
 
-        // Clamp within viewport
-        const el: HTMLElement = this.botEl?.nativeElement;
+        const el = this.botEl?.nativeElement as HTMLElement;
         const w = el ? el.offsetWidth : 70;
         const h = el ? el.offsetHeight : 130;
         newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - w));
@@ -222,21 +269,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
     }
 
-    private _onDragEnd() {
-        this._clearLongPress();
-        this._unlisteners.forEach(fn => fn());
-        this._unlisteners = [];
-        const wasDragging = this._dragActive;
-        this.isDragging = false;
-        this._dragActive = false;
-        if (wasDragging) {
-            // Block the click that fires right after mouseup/touchend
-            this._justDragged = true;
-            setTimeout(() => { this._justDragged = false; }, 0);
-        }
-        this.cdr.detectChanges();
-    }
-
+    // ── Style applied to bot-scene when moved ───────────────────────────────
     get botDragStyle(): { [key: string]: string } {
         if (this.dragX !== null && this.dragY !== null) {
             return {
@@ -249,12 +282,13 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         return {};
     }
 
-    // ── Chat toggle with jump ───────────────────────────────────────────────
+    // ── Chat toggle (called by close button + internal) ──────────────────────
     toggleChat() {
-        // Don't open chat if the user just finished dragging
-        if (this._justDragged) return;
+        this._doToggleChat();
+    }
+
+    private _doToggleChat() {
         if (!this.isOpen) {
-            // Jump animation before opening
             this.isJumping = true;
             setTimeout(() => {
                 this.isJumping = false;
@@ -268,7 +302,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
     }
 
-    // ── Messaging ─────────────────────────────────────────────────────────
+    // ── Messaging ────────────────────────────────────────────────────────────
     sendMessage() {
         if (!this.inputText.trim() || this.isWaiting) return;
         const currentUser = this.authService.getCurrentUser();

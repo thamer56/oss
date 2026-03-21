@@ -1,14 +1,14 @@
 <ng-container *ngIf="!isLoginRoute">
 
-    <!-- ══ Welcome bubble ══ -->
+    <!-- ══ Welcome bubble (fixed position — stays in corner regardless of bot position) ══ -->
     <div *ngIf="showWelcome" class="bot-welcome-bubble">
         <span>{{ welcomeText }}</span>
     </div>
 
     <!-- ══ THE BOT CHARACTER (always visible, closed state) ══ -->
     <div class="bot-scene" #botEl [class.bot-jumping]="isJumping" [class.bot-dragging]="isDragging"
-        [ngStyle]="botDragStyle" (click)="toggleChat()" (mousedown)="onBotPointerDown($event)"
-        (touchstart)="onBotPointerDown($event)" (contextmenu)="$event.preventDefault()" *ngIf="!isOpen || isJumping">
+        [ngStyle]="botDragStyle" (click)="onBotClick($event)" (touchstart)="onBotTouchStart($event)"
+        (contextmenu)="$event.preventDefault()" *ngIf="!isOpen || isJumping">
 
         <!-- Wave arm (appears on logout hover OR welcome) -->
         <div class="bot-arm-wrap" [class.waving]="isWaving">
@@ -69,7 +69,7 @@
     </div><!-- /bot-scene -->
 
 
-    <!-- ══ CHAT WINDOW ══ -->
+    <!-- ══ CHAT WINDOW (fixed position — stays in corner regardless of bot position) ══ -->
     <div class="chat-window" *ngIf="isOpen && !isJumping">
 
         <!-- Header -->
