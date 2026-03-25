@@ -94,6 +94,16 @@ export class DivisionChiefDashboardComponent implements OnInit {
         return (nom || '').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
     }
 
+    getDivisionName(divId: string | null | undefined): string {
+        const map: Record<string, string> = {
+            'D01': 'Division Climat',
+            'D02': 'Division Eau',
+            'D03': 'Division Terre',
+            'D04': 'Division Biodiversité',
+        };
+        return divId ? (map[divId] || divId) : '';
+    }
+
     applyFilters() {
         this.projects = this.allProjects.filter((p: any) => {
             const yearOk = !this.filterYear || +p.annee_debut === +this.filterYear || +p.annee_fin === +this.filterYear;

@@ -101,6 +101,16 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
         return Math.min(100, Math.round((this.stats.budgetDepense / this.stats.budgetTotal) * 100));
     }
 
+    getDivisionName(divId: string): string {
+        const map: Record<string, string> = {
+            'D01': 'Climat',
+            'D02': 'Eau',
+            'D03': 'Terre',
+            'D04': 'Biodiversité',
+        };
+        return map[divId] || divId;
+    }
+
     private destroyCharts() {
         this.charts.forEach(c => { try { c.destroy(); } catch (e) { } });
         this.charts = [];
@@ -144,7 +154,7 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
         const budgetEl = this.budgetChartRef?.nativeElement;
         if (budgetEl) {
             const divs = this.stats.parDivision || [];
-            const labels = divs.map((d: any) => d.division);
+            const labels = divs.map((d: any) => this.getDivisionName(d.division));
             const c2 = new Chart(budgetEl, {
                 type: 'bar',
                 data: {
@@ -181,7 +191,7 @@ export class StatsDashboardComponent implements OnInit, AfterViewInit, OnChanges
         const avancementEl = this.avancementChartRef?.nativeElement;
         if (avancementEl) {
             const divs = this.stats.parDivision || [];
-            const labels = divs.map((d: any) => d.division);
+            const labels = divs.map((d: any) => this.getDivisionName(d.division));
             const c3 = new Chart(avancementEl, {
                 type: 'bar',
                 data: {

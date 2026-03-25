@@ -52,7 +52,8 @@
                 </div>
                 <div>
                     <h1 class="text-lg md:text-2xl font-bold tracking-tight text-slate-800">Mes Projets</h1>
-                    <p class="hidden md:block text-sm text-slate-500 font-medium">{{ user?.division_id }} — Gestion
+                    <p class="hidden md:block text-sm text-slate-500 font-medium">{{ getDivisionName(user?.division_id)
+                        }} — Gestion
                         Opérationnelle</p>
                 </div>
             </div>

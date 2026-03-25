@@ -16,8 +16,8 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
-            <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mt-2 mb-2">Division {{
-                user?.division_id }}</p>
+            <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mt-2 mb-2">{{
+                getDivisionName(user?.division_id) }}</p>
             <a routerLink="/division-chief" routerLinkActive="bg-blue-50 text-blue-700 font-bold shadow-sm"
                 [routerLinkActiveOptions]="{exact: true}"
                 class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-xl transition-all font-medium group">
@@ -69,23 +69,14 @@
                     </span>
                 </div>
                 <div>
-                    <h1 class="text-lg md:text-2xl font-bold leading-tight text-slate-800">Division {{ user?.division_id
-                        }}
+                    <h1 class="text-lg md:text-2xl font-bold leading-tight text-slate-800">{{
+                        getDivisionName(user?.division_id) }}
                     </h1>
                     <p class="text-xs md:text-sm text-slate-500 font-medium uppercase tracking-wider">Tableau de bord de
                         la Division</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <!-- Language Toggle Removed -->
-
-                <!-- [TEST] Bouton Mode TV — À SUPPRIMER APRÈS TEST -->
-                <a routerLink="/tv-display"
-                    class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-amber-700 bg-amber-50 border border-dashed border-amber-400 text-xs font-bold hover:bg-amber-100 transition-all"
-                    title="Mode TV Display (test — à supprimer)">
-                    <span class="material-symbols-outlined text-base">tv</span>
-                    Mode TV
-                </a>
 
                 <button (click)="openAddProject()"
                     class="hidden md:flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all">
@@ -171,7 +162,7 @@
                     <h2 class="text-lg md:text-xl font-bold text-slate-800">Objectifs de la Division</h2>
                     <span
                         class="text-xs md:text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 uppercase">{{
-                        user?.division_id }}</span>
+                        getDivisionName(user?.division_id) }}</span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">

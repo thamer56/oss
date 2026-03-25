@@ -37,8 +37,22 @@ export class TvDisplayComponent implements OnInit, OnDestroy {
         const r = this.user?.role?.toLowerCase() || '';
         if (r === 'se') return 'Secrétariat Exécutif';
         if (r === 'directeur') return 'Direction Générale';
-        if (r === 'chef_division') return `Division ${this.user?.division_id || ''}`;
+        if (r === 'chef_division') return `Division ${this.getDivisionName(this.user?.division_id)}`;
         return this.user?.role || '';
+    }
+
+    readonly divisionNames: Record<string, string> = {
+        'D01': 'Climat',
+        'D02': 'Eau',
+        'D03': 'Terre',
+        'D04': 'Biodiversité',
+    };
+
+    readonly divisions = Object.keys(this.divisionNames);
+
+    getDivisionName(divId: string | null | undefined): string {
+        if (!divId) return '';
+        return this.divisionNames[divId] || divId;
     }
 
     get divisionColor(): string {
@@ -206,7 +220,7 @@ export class TvDisplayComponent implements OnInit, OnDestroy {
         const budgetEl = this.budgetChartRef?.nativeElement;
         if (budgetEl) {
             const divs = this.stats.parDivision || [];
-            const labels = divs.map((d: any) => d.division);
+            const labels = divs.map((d: any) => this.getDivisionName(d.division));
             const c2 = new Chart(budgetEl, {
                 type: 'bar',
                 data: {
@@ -243,7 +257,7 @@ export class TvDisplayComponent implements OnInit, OnDestroy {
         const avancementEl = this.avancementChartRef?.nativeElement;
         if (avancementEl) {
             const divs = this.stats.parDivision || [];
-            const labels = divs.map((d: any) => d.division);
+            const labels = divs.map((d: any) => this.getDivisionName(d.division));
             const c3 = new Chart(avancementEl, {
                 type: 'bar',
                 data: {

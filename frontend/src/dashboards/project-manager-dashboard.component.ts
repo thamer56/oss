@@ -68,6 +68,16 @@ export class ProjectManagerDashboardComponent implements OnInit {
         return Math.round((done / p.tasks.length) * 100);
     }
 
+    getDivisionName(divId: string | null | undefined): string {
+        const map: Record<string, string> = {
+            'D01': 'Division Climat',
+            'D02': 'Division Eau',
+            'D03': 'Division Terre',
+            'D04': 'Division Biodiversité',
+        };
+        return divId ? (map[divId] || divId) : '';
+    }
+
     goToProject(p: Project) {
         this.router.navigate(['/project', p.id_projet]);
     }
