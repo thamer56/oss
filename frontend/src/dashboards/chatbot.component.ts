@@ -50,6 +50,9 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     private _touchDragActive = false; // true once finger starts moving after long-press
     private _justDragged = false;     // blocks spurious click after touch drag
     private _unlisteners: (() => void)[] = [];
+    private _touchStartTime = 0;
+    private _touchStartX = 0;
+    private _touchStartY = 0;
 
     @ViewChild('chatWindow') chatWindow?: ElementRef;
     @ViewChild('botEl') botEl?: ElementRef;
@@ -204,10 +207,13 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
     }
 
-    // ── Mobile: long-press drag ──────────────────────────────────────────────
+    // ── Mobile: tap + long-press drag ───────────────────────────────────────
     onBotTouchStart(event: TouchEvent) {
         const touch = event.touches[0];
         this._touchDragActive = false;
+        this._touchStartTime = Date.now();
+        this._touchStartX = touch.clientX;
+        this._touchStartY = touch.clientY;
 
         if (this.botEl) {
             const rect = this.botEl.nativeElement.getBoundingClientRect();
@@ -217,11 +223,32 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
         clearTimeout(this._longPressTimer);
         this._longPressTimer = setTimeout(() => {
+            // Only activate drag if finger hasn't moved much
             this.isDragging = true;
             this.cdr.detectChanges();
             this._attachTouchDragListeners();
-        }, 350);
+        }, 400);
 
+        // Attach a one-shot touchend to detect tap (short press, no movement)
+        const onTouchEndForTap = (e: TouchEvent) => {
+            document.removeEventListener('touchend', onTouchEndForTap);
+            if (this.isDragging || this._touchDragActive) return; // drag already started
+
+            const dt = Date.now() - this._touchStartTime;
+            const changedTouch = e.changedTouches[0];
+            const dx = Math.abs(changedTouch.clientX - this._touchStartX);
+            const dy = Math.abs(changedTouch.clientY - this._touchStartY);
+
+            if (dt < 350 && dx < 10 && dy < 10) {
+                // It's a tap — cancel long-press and toggle chat
+                clearTimeout(this._longPressTimer);
+                this._doToggleChat();
+            }
+        };
+        document.addEventListener('touchend', onTouchEndForTap, { once: true });
+
+        // Prevent default only to block browser scroll on the bot element,
+        // but we manually handle the tap above so click propagation is fine.
         event.preventDefault();
     }
 
@@ -240,7 +267,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
             this._touchDragActive = false;
             if (wasDragging) {
                 this._justDragged = true;
-                setTimeout(() => { this._justDragged = false; }, 0);
+                setTimeout(() => { this._justDragged = false; }, 300);
             }
             this.cdr.detectChanges();
         };
