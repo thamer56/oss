@@ -285,15 +285,15 @@
                         <div class="grid grid-cols-3 gap-4 pt-3 border-t border-slate-100">
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Baseline</p>
-                                <p class="text-xs font-semibold text-slate-700 mt-0.5 truncate" [title]="kpi.baseline">{{ kpi.baseline || 'N/A' }}</p>
+                                <p class="text-xs font-semibold text-slate-700 mt-0.5" [title]="kpi.baseline">{{ kpi.baseline || 'N/A' }}</p>
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Target</p>
-                                <p class="text-xs font-semibold text-blue-600 mt-0.5 truncate" [title]="kpi.target">{{ kpi.target || 'N/A' }}</p>
+                                <p class="text-xs font-semibold text-blue-600 mt-0.5" [title]="kpi.target">{{ kpi.target || 'N/A' }}</p>
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Atteint</p>
-                                <p class="text-xs font-black text-emerald-600 mt-0.5 truncate" [title]="kpi.achievements">{{ kpi.achievements || '—' }}</p>
+                                <p class="text-xs font-black text-emerald-600 mt-0.5" [title]="kpi.achievements">{{ kpi.achievements || '—' }}</p>
                             </div>
                         </div>
                     </div>
