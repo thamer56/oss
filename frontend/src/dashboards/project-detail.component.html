@@ -191,30 +191,59 @@
             <!-- Left: Tasks + More Info + Documents -->
             <div class="md:col-span-2 space-y-6">
 
-                <!-- Task Management -->
+                <!-- Extended Data Tabs area -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">
-                            Tâches ({{ completedTaskCount }}/{{ totalTaskCount }})
-                        </h3>
-                        <div *ngIf="canEdit" class="flex items-center gap-4">
-                            <!-- AI Generation Button -->
-                            <button *ngIf="totalTaskCount === 0" (click)="generateTasksWithAI()"
-                                [disabled]="isGeneratingAI"
-                                class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-lg shadow-sm transition-all disabled:opacity-50">
-                                <span *ngIf="!isGeneratingAI"
-                                    class="material-symbols-outlined text-sm">auto_awesome</span>
-                                <span *ngIf="isGeneratingAI"
-                                    class="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
-                                {{ isGeneratingAI ? 'Génération...' : 'Générer avec IA' }}
-                            </button>
+                    
+                    <!-- Tabs Header -->
+                    <div class="flex overflow-x-auto hide-scrollbar border-b border-slate-100 bg-slate-50">
+                        <button (click)="activeTab = 'tasks'" [class.border-blue-600]="activeTab === 'tasks'" [class.text-blue-600]="activeTab === 'tasks'"
+                            class="flex-1 min-w-[120px] px-4 py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none"
+                            [ngClass]="activeTab === 'tasks' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'">
+                            Tâches 
+                            <span class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600">{{ completedTaskCount }}/{{ totalTaskCount }}</span>
+                        </button>
+                        <button (click)="activeTab = 'kpis'" [class.border-blue-600]="activeTab === 'kpis'" [class.text-blue-600]="activeTab === 'kpis'"
+                            class="flex-1 min-w-[120px] px-4 py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none"
+                            [ngClass]="activeTab === 'kpis' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'">
+                            KPIs M&E
+                            <span *ngIf="kpis.length" class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700">{{ kpis.length }}</span>
+                        </button>
+                        <button (click)="activeTab = 'trainings'" [class.border-blue-600]="activeTab === 'trainings'" [class.text-blue-600]="activeTab === 'trainings'"
+                            class="flex-1 min-w-[120px] px-4 py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none"
+                            [ngClass]="activeTab === 'trainings' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'">
+                            Formations
+                            <span *ngIf="trainings.length" class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700">{{ trainings.length }}</span>
+                        </button>
+                        <button (click)="activeTab = 'events'" [class.border-blue-600]="activeTab === 'events'" [class.text-blue-600]="activeTab === 'events'"
+                            class="flex-1 min-w-[120px] px-4 py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none"
+                            [ngClass]="activeTab === 'events' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'">
+                            Agenda
+                            <span *ngIf="events.length" class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{{ events.length }}</span>
+                        </button>
+                    </div>
 
-                            <div class="flex items-center gap-2 text-xs text-slate-400">
-                                <span class="material-symbols-outlined text-sm text-blue-500">edit</span>
-                                <span class="text-blue-500 font-semibold">Mode édition</span>
+                    <!-- TASKS TAB -->
+                    <div *ngIf="activeTab === 'tasks'">
+                        <div class="px-6 py-3 border-b border-slate-100 flex items-center justify-between bg-white">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Gestion des activités</span>
+                            <div *ngIf="canEdit" class="flex items-center gap-4">
+                                <!-- AI Generation Button -->
+                                <button *ngIf="totalTaskCount === 0" (click)="generateTasksWithAI()"
+                                    [disabled]="isGeneratingAI"
+                                    class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-lg shadow-sm transition-all disabled:opacity-50">
+                                    <span *ngIf="!isGeneratingAI"
+                                        class="material-symbols-outlined text-sm">auto_awesome</span>
+                                    <span *ngIf="isGeneratingAI"
+                                        class="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                                    {{ isGeneratingAI ? 'Génération...' : 'Générer avec IA' }}
+                                </button>
+    
+                                <div class="flex items-center gap-2 text-xs text-slate-400">
+                                    <span class="material-symbols-outlined text-sm text-blue-500">edit</span>
+                                    <span class="text-blue-500 font-semibold">Mode édition</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
                     <div class="p-4 space-y-2">
                         <!-- AI Error Message -->
@@ -297,7 +326,97 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                    </div> <!-- End Tasks Tab -->
+
+                    <!-- KPIs TAB -->
+                    <div *ngIf="activeTab === 'kpis'" class="p-6">
+                        <div *ngIf="kpis.length === 0" class="text-center py-8">
+                            <span class="material-symbols-outlined text-4xl text-slate-200 mb-2 block">query_stats</span>
+                            <p class="text-sm text-slate-400">Aucun indicateur de performance défini pour l'instant.</p>
+                        </div>
+                        <div *ngIf="kpis.length > 0" class="space-y-4">
+                            <div *ngFor="let kpi of kpis" class="bg-slate-50 border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start gap-4 mb-3">
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm leading-snug">{{ kpi.indicator }}</h4>
+                                        <p class="text-xs text-slate-500 mt-1">{{ kpi.indicator_desc }}</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 font-bold text-[10px] rounded uppercase tracking-widest whitespace-nowrap flex-none">Cible</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 pt-3 border-t border-slate-200">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Baseline</p>
+                                        <p class="text-xs font-semibold text-slate-700 mt-0.5 truncate" [title]="kpi.baseline">{{ kpi.baseline || 'N/A' }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Target</p>
+                                        <p class="text-xs font-semibold text-blue-600 mt-0.5 truncate" [title]="kpi.target">{{ kpi.target || 'N/A' }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Atteint</p>
+                                        <p class="text-xs font-black text-emerald-600 mt-0.5 truncate" [title]="kpi.achievements">{{ kpi.achievements || '—' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- End KPIs Tab -->
+
+                    <!-- TRAININGS TAB -->
+                    <div *ngIf="activeTab === 'trainings'" class="p-6">
+                        <div *ngIf="trainings.length === 0" class="text-center py-8">
+                            <span class="material-symbols-outlined text-4xl text-slate-200 mb-2 block">school</span>
+                            <p class="text-sm text-slate-400">Aucune session de formation recensée.</p>
+                        </div>
+                        <div *ngIf="trainings.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div *ngFor="let tr of trainings" class="flex flex-col border border-slate-200 rounded-xl overflow-hidden hover:border-orange-300 transition-colors">
+                                <div class="bg-orange-50/50 p-3 border-b border-slate-100">
+                                    <h4 class="font-bold text-slate-800 text-sm line-clamp-2" [title]="tr.title">{{ tr.title }}</h4>
+                                </div>
+                                <div class="p-3 bg-white flex-1 flex flex-col gap-2">
+                                    <div class="flex items-center gap-2 text-xs text-slate-600">
+                                        <span class="material-symbols-outlined text-[16px] text-slate-400">category</span>
+                                        <span class="truncate">{{ tr.category || 'Général' }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs text-slate-600">
+                                        <span class="material-symbols-outlined text-[16px] text-slate-400">pin_drop</span>
+                                        <span class="truncate">{{ tr.venue || 'En ligne' }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 mt-auto">
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ tr.start_date }}</p>
+                                        <span class="bg-orange-100 text-orange-700 font-black text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">group</span>
+                                            {{ tr.participant_count || 0 }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- End Trainings Tab -->
+
+                    <!-- EVENTS TAB -->
+                    <div *ngIf="activeTab === 'events'" class="p-6">
+                        <div *ngIf="events.length === 0" class="text-center py-8">
+                            <span class="material-symbols-outlined text-4xl text-slate-200 mb-2 block">event_upcoming</span>
+                            <p class="text-sm text-slate-400">Aucun événement institutionnel programmé.</p>
+                        </div>
+                        <div *ngIf="events.length > 0" class="relative border-l-2 border-emerald-100 ml-3 space-y-6">
+                            <div *ngFor="let ev of events" class="relative pl-6">
+                                <div class="absolute left-[-9px] top-1 w-4 h-4 rounded-full bg-emerald-500 border-4 border-white shadow-sm"></div>
+                                <div class="bg-white border border-slate-100 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                    <p class="text-xs font-bold text-emerald-600 mb-1 tracking-wider uppercase flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[14px]">calendar_month</span>
+                                        {{ ev.event_date }}
+                                    </p>
+                                    <h4 class="font-bold text-slate-800 text-sm mb-2">{{ ev.title }}</h4>
+                                    <div class="inline-block bg-slate-50 border border-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-lg">
+                                        <span class="font-semibold text-slate-500">Décision:</span> {{ ev.decision || 'En attente' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- End Events Tab -->
+
+                </div> <!-- End Tab Container -->
 
                 <!-- Project Info -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">

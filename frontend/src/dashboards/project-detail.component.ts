@@ -23,6 +23,13 @@ export class ProjectDetailComponent implements OnInit {
     isEditingInfo = false;
     editModel: any = {};
 
+    // Extended Data & Tabs
+    activeTab: 'tasks' | 'kpis' | 'trainings' | 'events' = 'tasks';
+    kpis: any[] = [];
+    trainings: any[] = [];
+    budgetDetails: any[] = [];
+    events: any[] = [];
+
     // Task management
     newTaskTitle = '';
     newTaskBudget = 0;
@@ -70,6 +77,12 @@ export class ProjectDetailComponent implements OnInit {
             );
             this.availableChefs = this.authService.getAllUsers().filter(u => u.role === 'chef_projet');
             this.docs = this.docService.getDocuments(this.project.id_projet);
+            
+            // Load extended data
+            this.projectService.getProjectKpis(id).subscribe(data => { this.kpis = data; this.cdr.markForCheck(); });
+            this.projectService.getProjectTrainings(id).subscribe(data => { this.trainings = data; this.cdr.markForCheck(); });
+            this.projectService.getProjectBudget(id).subscribe(data => { this.budgetDetails = data; this.cdr.markForCheck(); });
+            this.projectService.getProjectEvents(id).subscribe(data => { this.events = data; this.cdr.markForCheck(); });
         }
     }
 

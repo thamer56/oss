@@ -212,4 +212,22 @@ export class ProjectService {
         if (!project.budget_total || project.budget_total === 0) return 0;
         return Math.round(((project.budget_depense || 0) / Math.max(project.budget_total, 1)) * 100);
     }
+
+    // ----- Extended Data (1OSS) -----
+    
+    getProjectKpis(projectId: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/projects/${projectId}/kpis`);
+    }
+
+    getProjectTrainings(projectId: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/projects/${projectId}/trainings`);
+    }
+
+    getProjectBudget(projectId: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/projects/${projectId}/budget`);
+    }
+
+    getProjectEvents(projectId: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/projects/${projectId}/events`);
+    }
 }
