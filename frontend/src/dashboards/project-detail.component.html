@@ -191,159 +191,104 @@
             <!-- Left: Tasks + More Info + Documents -->
             <div class="md:col-span-2 space-y-6">
 
-                <!-- Extended Data Tabs area -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    
-                    <!-- Tabs Header -->
-                    <div class="flex overflow-x-auto hide-scrollbar border-b border-slate-100 bg-slate-50">
-                        <button (click)="activeTab = 'tasks'" [class.border-blue-600]="activeTab === 'tasks'" [class.text-blue-600]="activeTab === 'tasks'"
-                            class="flex-1 min-w-[120px] px-4 py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none"
-                            [ngClass]="activeTab === 'tasks' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'">
-                            Tâches 
-                            <span class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600">{{ completedTaskCount }}/{{ totalTaskCount }}</span>
-                        </button>
-                        <button (click)="activeTab = 'kpis'" [class.border-blue-600]="activeTab === 'kpis'" [class.text-blue-600]="activeTab === 'kpis'"
-                            class="flex-1 min-w-[120px] px-4 py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none"
-                            [ngClass]="activeTab === 'kpis' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'">
-                            KPIs M&E
-                            <span *ngIf="kpis.length" class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700">{{ kpis.length }}</span>
-                        </button>
-                        <button (click)="activeTab = 'trainings'" [class.border-blue-600]="activeTab === 'trainings'" [class.text-blue-600]="activeTab === 'trainings'"
-                            class="flex-1 min-w-[120px] px-4 py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none"
-                            [ngClass]="activeTab === 'trainings' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'">
-                            Formations
-                            <span *ngIf="trainings.length" class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700">{{ trainings.length }}</span>
-                        </button>
-                        <button (click)="activeTab = 'events'" [class.border-blue-600]="activeTab === 'events'" [class.text-blue-600]="activeTab === 'events'"
-                            class="flex-1 min-w-[120px] px-4 py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none"
-                            [ngClass]="activeTab === 'events' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'">
-                            Agenda
-                            <span *ngIf="events.length" class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{{ events.length }}</span>
-                        </button>
-                    </div>
-
-                    <!-- TASKS TAB -->
-                    <div *ngIf="activeTab === 'tasks'">
-                        <div class="px-6 py-3 border-b border-slate-100 flex items-center justify-between bg-white">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Gestion des activités</span>
-                            <div *ngIf="canEdit" class="flex items-center gap-4">
-                                <!-- AI Generation Button -->
-                                <button *ngIf="totalTaskCount === 0" (click)="generateTasksWithAI()"
-                                    [disabled]="isGeneratingAI"
-                                    class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-lg shadow-sm transition-all disabled:opacity-50">
-                                    <span *ngIf="!isGeneratingAI"
-                                        class="material-symbols-outlined text-sm">auto_awesome</span>
-                                    <span *ngIf="isGeneratingAI"
-                                        class="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
-                                    {{ isGeneratingAI ? 'Génération...' : 'Générer avec IA' }}
-                                </button>
-    
-                                <div class="flex items-center gap-2 text-xs text-slate-400">
-                                    <span class="material-symbols-outlined text-sm text-blue-500">edit</span>
-                                    <span class="text-blue-500 font-semibold">Mode édition</span>
-                                </div>
+                <!-- TASKS BLOCK -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">task</span>
+                            Tâches ({{ completedTaskCount }}/{{ totalTaskCount }})
+                        </h3>
+                        <div *ngIf="canEdit" class="flex items-center gap-4">
+                            <!-- AI Generation Button -->
+                            <button *ngIf="totalTaskCount === 0" (click)="generateTasksWithAI()"
+                                [disabled]="isGeneratingAI"
+                                class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-lg shadow-sm transition-all disabled:opacity-50">
+                                <span *ngIf="!isGeneratingAI" class="material-symbols-outlined text-sm">auto_awesome</span>
+                                <span *ngIf="isGeneratingAI" class="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                                {{ isGeneratingAI ? 'Générant...' : 'Générer avec IA' }}
+                            </button>
+                            <div class="flex items-center gap-2 text-xs text-slate-400">
+                                <span class="material-symbols-outlined text-sm text-blue-500">edit</span>
+                                <span class="text-blue-500 font-semibold">Mode édition</span>
                             </div>
                         </div>
-
+                    </div>
                     <div class="p-4 space-y-2">
-                        <!-- AI Error Message -->
-                        <div *ngIf="aiError"
-                            class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-2">
+                        <div *ngIf="aiError" class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-2">
                             <span class="material-symbols-outlined text-sm mt-0.5">error</span>
                             <span>{{ aiError }}</span>
                         </div>
-                        <!-- No tasks -->
                         <div *ngIf="!project.tasks || project.tasks.length === 0" class="text-center py-8">
                             <span class="material-symbols-outlined text-4xl text-slate-200 mb-2 block">task_alt</span>
                             <p class="text-sm text-slate-400">Aucune tâche définie pour ce projet</p>
                         </div>
-
-                        <!-- Task list -->
-                        <div *ngFor="let task of project.tasks"
-                            class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100">
-
+                        <div *ngFor="let task of project.tasks" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100">
                             <!-- Edit mode -->
                             <ng-container *ngIf="editingTaskId === task.id">
                                 <div class="flex-1 flex items-center gap-2 flex-wrap">
-                                    <input [(ngModel)]="editingTaskTitle" type="text"
-                                        class="flex-1 min-w-0 bg-white border border-blue-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none">
-                                    <input [(ngModel)]="editingTaskBudget" type="number" placeholder="Budget $"
-                                        class="w-28 bg-white border border-blue-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none">
-                                    <button (click)="saveEditTask()"
-                                        class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg">
+                                    <input [(ngModel)]="editingTaskTitle" type="text" class="flex-1 min-w-0 bg-white border border-blue-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none">
+                                    <input [(ngModel)]="editingTaskBudget" type="number" placeholder="Budget $" class="w-28 bg-white border border-blue-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none">
+                                    <button (click)="saveEditTask()" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg">
                                         <span class="material-symbols-outlined text-sm">check</span>
                                     </button>
-                                    <button (click)="cancelEditTask()"
-                                        class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg">
+                                    <button (click)="cancelEditTask()" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg">
                                         <span class="material-symbols-outlined text-sm">close</span>
                                     </button>
                                 </div>
                             </ng-container>
-
                             <!-- Display mode -->
                             <ng-container *ngIf="editingTaskId !== task.id">
-                                <button (click)="toggleTask(task.id)"
-                                    class="w-5 h-5 rounded-full border-2 flex-none transition-all flex items-center justify-center"
-                                    [ngClass]="task.completed ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 hover:border-emerald-400'">
-                                    <span *ngIf="task.completed"
-                                        class="material-symbols-outlined text-white text-xs">check</span>
+                                <button (click)="toggleTask(task.id)" class="w-5 h-5 rounded-full border-2 flex-none transition-all flex items-center justify-center" [ngClass]="task.completed ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 hover:border-emerald-400'">
+                                    <span *ngIf="task.completed" class="material-symbols-outlined text-white text-xs">check</span>
                                 </button>
-                                <span class="flex-1 text-sm" [class.line-through]="task.completed"
-                                    [class.text-slate-400]="task.completed" [class.text-slate-700]="!task.completed">
-                                    {{ task.title }}
-                                </span>
-                                <span *ngIf="task.estimatedBudget"
-                                    class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex-none">
-                                    ${{ task.estimatedBudget | number }}
-                                </span>
-                                <div *ngIf="canEdit"
-                                    class="opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity flex-none">
-                                    <button (click)="startEditTask(task)"
-                                        class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
+                                <span class="flex-1 text-sm" [class.line-through]="task.completed" [class.text-slate-400]="task.completed" [class.text-slate-700]="!task.completed">{{ task.title }}</span>
+                                <span *ngIf="task.estimatedBudget" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex-none">${{ task.estimatedBudget | number }}</span>
+                                <div *ngIf="canEdit" class="opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity flex-none">
+                                    <button (click)="startEditTask(task)" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
                                         <span class="material-symbols-outlined text-sm">edit</span>
                                     </button>
-                                    <button (click)="deleteTask(task.id)"
-                                        class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                                    <button (click)="deleteTask(task.id)" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
                                         <span class="material-symbols-outlined text-sm">delete</span>
                                     </button>
                                 </div>
                             </ng-container>
                         </div>
-
-                        <!-- Add Task (only for authorized users) -->
+                        <!-- Add Task -->
                         <div *ngIf="canEdit" class="mt-4 pt-4 border-t border-slate-100">
                             <div class="flex gap-2 flex-wrap">
-                                <input [(ngModel)]="newTaskTitle" type="text" placeholder="Nouvelle tâche..."
-                                    class="flex-1 min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                    (keyup.enter)="addTask()">
-                                <input [(ngModel)]="newTaskBudget" type="number" placeholder="Budget $"
-                                    class="w-28 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                                <button (click)="addTask()" [disabled]="!newTaskTitle.trim()"
-                                    class="px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl disabled:opacity-40 transition-all flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">add</span>
-                                    Ajouter
+                                <input [(ngModel)]="newTaskTitle" type="text" placeholder="Nouvelle tâche..." class="flex-1 min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" (keyup.enter)="addTask()">
+                                <input [(ngModel)]="newTaskBudget" type="number" placeholder="Budget $" class="w-28 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                <button (click)="addTask()" [disabled]="!newTaskTitle.trim()" class="px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl disabled:opacity-40 transition-all flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">add</span> Ajouter
                                 </button>
                             </div>
                         </div>
                     </div>
-                    </div> <!-- End Tasks Tab -->
+                </div>
 
-                    <!-- KPIs TAB -->
-                    <div *ngIf="activeTab === 'kpis'" class="p-6">
-                        <div *ngIf="kpis.length === 0" class="text-center py-8">
-                            <span class="material-symbols-outlined text-4xl text-slate-200 mb-2 block">query_stats</span>
-                            <p class="text-sm text-slate-400">Aucun indicateur de performance défini pour l'instant.</p>
+                <!-- KPIs BLOCK -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                        <h3 class="text-sm font-bold text-purple-700 uppercase tracking-wider flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">query_stats</span>
+                            Indicateurs de Performance (KPIs)
+                        </h3>
+                        <span *ngIf="kpis.length" class="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 font-bold">{{ kpis.length }} Indics</span>
+                    </div>
+                    <div class="p-6">
+                        <div *ngIf="kpis.length === 0" class="text-center py-4">
+                            <p class="text-sm text-slate-400">Aucun indicateur de performance défini.</p>
                         </div>
                         <div *ngIf="kpis.length > 0" class="space-y-4">
-                            <div *ngFor="let kpi of kpis" class="bg-slate-50 border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                            <div *ngFor="let kpi of kpis" class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
                                 <div class="flex justify-between items-start gap-4 mb-3">
                                     <div>
                                         <h4 class="font-bold text-slate-800 text-sm leading-snug">{{ kpi.indicator }}</h4>
                                         <p class="text-xs text-slate-500 mt-1">{{ kpi.indicator_desc }}</p>
                                     </div>
-                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 font-bold text-[10px] rounded uppercase tracking-widest whitespace-nowrap flex-none">Cible</span>
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 font-bold text-[10px] rounded uppercase tracking-widest whitespace-nowrap">M&E</span>
                                 </div>
-                                <div class="grid grid-cols-3 gap-4 pt-3 border-t border-slate-200">
+                                <div class="grid grid-cols-3 gap-4 pt-3 border-t border-slate-100">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Baseline</p>
                                         <p class="text-xs font-semibold text-slate-700 mt-0.5 truncate" [title]="kpi.baseline">{{ kpi.baseline || 'N/A' }}</p>
@@ -359,20 +304,28 @@
                                 </div>
                             </div>
                         </div>
-                    </div> <!-- End KPIs Tab -->
+                    </div>
+                </div>
 
-                    <!-- TRAININGS TAB -->
-                    <div *ngIf="activeTab === 'trainings'" class="p-6">
-                        <div *ngIf="trainings.length === 0" class="text-center py-8">
-                            <span class="material-symbols-outlined text-4xl text-slate-200 mb-2 block">school</span>
+                <!-- TRAININGS BLOCK -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                        <h3 class="text-sm font-bold text-orange-600 uppercase tracking-wider flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">school</span>
+                            Sessions de Formation
+                        </h3>
+                        <span *ngIf="trainings.length" class="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-700 font-bold">{{ trainings.length }} Sessions</span>
+                    </div>
+                    <div class="p-6">
+                        <div *ngIf="trainings.length === 0" class="text-center py-4">
                             <p class="text-sm text-slate-400">Aucune session de formation recensée.</p>
                         </div>
                         <div *ngIf="trainings.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div *ngFor="let tr of trainings" class="flex flex-col border border-slate-200 rounded-xl overflow-hidden hover:border-orange-300 transition-colors">
+                            <div *ngFor="let tr of trainings" class="flex flex-col border border-slate-200 rounded-xl overflow-hidden hover:border-orange-300 transition-colors bg-white shadow-sm hover:shadow-md">
                                 <div class="bg-orange-50/50 p-3 border-b border-slate-100">
                                     <h4 class="font-bold text-slate-800 text-sm line-clamp-2" [title]="tr.title">{{ tr.title }}</h4>
                                 </div>
-                                <div class="p-3 bg-white flex-1 flex flex-col gap-2">
+                                <div class="p-3 flex-1 flex flex-col gap-2">
                                     <div class="flex items-center gap-2 text-xs text-slate-600">
                                         <span class="material-symbols-outlined text-[16px] text-slate-400">category</span>
                                         <span class="truncate">{{ tr.category || 'Général' }}</span>
@@ -391,13 +344,21 @@
                                 </div>
                             </div>
                         </div>
-                    </div> <!-- End Trainings Tab -->
+                    </div>
+                </div>
 
-                    <!-- EVENTS TAB -->
-                    <div *ngIf="activeTab === 'events'" class="p-6">
-                        <div *ngIf="events.length === 0" class="text-center py-8">
-                            <span class="material-symbols-outlined text-4xl text-slate-200 mb-2 block">event_upcoming</span>
-                            <p class="text-sm text-slate-400">Aucun événement institutionnel programmé.</p>
+                <!-- EVENTS BLOCK -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                        <h3 class="text-sm font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">event</span>
+                            Agenda & Événements
+                        </h3>
+                        <span *ngIf="events.length" class="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold">{{ events.length }} Événements</span>
+                    </div>
+                    <div class="p-6">
+                        <div *ngIf="events.length === 0" class="text-center py-4">
+                            <p class="text-sm text-slate-400">Aucun événement programmé.</p>
                         </div>
                         <div *ngIf="events.length > 0" class="relative border-l-2 border-emerald-100 ml-3 space-y-6">
                             <div *ngFor="let ev of events" class="relative pl-6">
@@ -414,9 +375,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div> <!-- End Events Tab -->
-
-                </div> <!-- End Tab Container -->
+                    </div>
+                </div>
 
                 <!-- Project Info -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
