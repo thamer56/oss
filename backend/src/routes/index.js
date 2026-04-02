@@ -1,8 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/index');
+const extendedController = require('../controllers/extended_data');
 
-// Projects
+// ── EXTENDED DATA (must come BEFORE generic /:id to avoid route shadowing) ──
+router.get('/projects/:id/kpis', extendedController.getKpisByProject);
+router.get('/projects/:id/trainings', extendedController.getTrainingsByProject);
+router.get('/projects/:id/budget', extendedController.getBudgetByProject);
+router.get('/projects/:id/events', extendedController.getEventsByProject);
+
+// ── PROJECTS ────────────────────────────────────────────────────────────────
 router.get('/projects', controller.getAllProjects);
 router.get('/projects/:id', controller.getProjectById);
 router.post('/projects', controller.createProject);
